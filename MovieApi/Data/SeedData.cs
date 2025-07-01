@@ -71,7 +71,7 @@ namespace MovieApi.Data
             for (int i = 0; i < numberOfActors; i++)
             {
                 var name = faker.Name.FullName();
-                var birthYear = faker.Person.DateOfBirth.Year;
+                var birthYear = faker.Date.Past(80, DateTime.Today.AddYears(-18)).Year;
                 var actor = new Actor
                 {
                     Name = name,
@@ -91,7 +91,7 @@ namespace MovieApi.Data
             for (int i = 0; i < numberOfReviews; i++)
             {
                 var reviewerName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(faker.Name.FullName());
-                var comment = $"A truly {faker.Hacker.Adjective} movie.";
+                var comment = $"A truly {faker.Hacker.Adjective()} movie.";
                 var rating = faker.Random.Int(1, 5);
                 var review = new Review
                 {

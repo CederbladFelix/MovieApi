@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MovieApi.Models.Entities
 {
@@ -9,7 +10,6 @@ namespace MovieApi.Models.Entities
         public string Comment { get; set; } = null!;
         [Range(1, 5)]
         public int Rating { get; set; }
-
         public Movie Movie { get; set; } = null!;
         public int MovieId { get; set; }
     }
