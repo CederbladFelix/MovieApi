@@ -13,36 +13,28 @@ namespace MovieApi.Controllers
 {
     [Route("api/movies")]
     [ApiController]
-    public class MoviesController : ControllerBase
+    public class MoviesController(MovieApiContext context) : ControllerBase
     {
-        private readonly MovieApiContext _context;
+        private readonly MovieApiContext _context = context;
 
-        public MoviesController(MovieApiContext context)
-        {
-            _context = context;
-        }
-
-        // GET: api/Movies
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
             var movies = await _context.Movies.ToListAsync();
 
-            var moviesDto = movies.Select(movie => new MovieDto
+            var moviesDto = movies.Select(m => new MovieDto
             {
-                Id = movie.Id,
-                Title = movie.Title,
-                Year = movie.Year,
-                Genre = movie.Genre,
-                Duration = movie.Duration
+                Id = m.Id,
+                Title = m.Title,
+                Year = m.Year,
+                Genre = m.Genre,
+                Duration = m.Duration
             })
             .ToList();
 
             return Ok(moviesDto);
         }
 
-
-        // GET: api/Movies/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {
@@ -62,7 +54,6 @@ namespace MovieApi.Controllers
             return movieDto;
         }
 
-        // GET: api/Movies/5
         [HttpGet("{id}/details")]
         public async Task<ActionResult<MovieDetailDto>> GetMovieDetails(int id)
         {
@@ -87,31 +78,27 @@ namespace MovieApi.Controllers
                 Language = movie.MovieDetails.Language,
                 Budget = movie.MovieDetails.Budget,
 
-                Reviews = movie.Reviews
+                Reviews = [.. movie.Reviews
                 .Select(r => new ReviewDto
                 {
                     Id = r.Id,
                     ReviewerName = r.ReviewerName,
                     Comment = r.Comment,
                     Rating = r.Rating
-                })
-                .ToList(),
+                })],
                
-                Actors = movie.MovieActors
+                Actors = [.. movie.MovieActors
                 .Select(ma => new ActorDto
                 {
                     Id = ma.Actor.Id,
                     Name = ma.Actor.Name,
                     BirthYear = ma.Actor.BirthYear
-                })
-                .ToList()
+                })]
             };
 
             return movieDetailDto;
         }
 
-        // PUT: api/Movies/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie(int id, MovieCreateDto dto)
         {
@@ -143,8 +130,6 @@ namespace MovieApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Movies
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<MovieDto>> PostMovie(MovieCreateDto dto)
         {
@@ -171,7 +156,6 @@ namespace MovieApi.Controllers
             return CreatedAtAction(nameof(GetMovie), new { id = movieDto.Id }, movieDto);
         }
 
-        // DELETE: api/Movies/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovie(int id)
         {
