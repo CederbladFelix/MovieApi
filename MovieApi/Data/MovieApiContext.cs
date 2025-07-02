@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MovieApi.Models.Entities;
 
 namespace MovieApi.Data
@@ -15,6 +11,8 @@ namespace MovieApi.Data
         }
 
         public DbSet<Movie> Movies { get; set; } = default!;
+        public DbSet<Actor> Actors { get; set; } = default!;
+        public DbSet<Review> Reviews { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,10 +30,20 @@ namespace MovieApi.Data
                 .HasForeignKey(r => r.MovieId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Movie>()
-                .HasMany(m => m.Actors)
-                .WithMany(a => a.Movies)
-                .UsingEntity(ma => ma.ToTable("ActorMovie"));
+            modelBuilder.Entity<MovieActor>()
+                .HasKey(ma => new { ma.MovieId, ma.ActorId });
+
+
+            modelBuilder.Entity<MovieActor>()
+                .HasOne(ma => ma.Movie)
+                .WithMany(m => m.MovieActors)
+                .HasForeignKey(ma => ma.MovieId);
+
+            modelBuilder.Entity<MovieActor>()
+                .HasOne(ma => ma.Actor)
+                .WithMany(a => a.MovieActors)
+                .HasForeignKey(ma => ma.ActorId);
+
 
         }
     }

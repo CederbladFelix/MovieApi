@@ -13,10 +13,10 @@ namespace MovieApi.Data
         {
             if (await context.Movies.AnyAsync()) return;
 
-            var actors = GenerateActors(faker.Random.Int(0, 30));
+            var actors = GenerateActors(10);
             await context.AddRangeAsync(actors);
 
-            var movies = GenerateMovies(faker.Random.Int(1, 25), actors);
+            var movies = GenerateMovies(10, actors);
             await context.AddRangeAsync(movies);
 
             await context.SaveChangesAsync();
@@ -28,12 +28,12 @@ namespace MovieApi.Data
 
             for (int i = 0; i < numberOfMovies; i++)
             {
-                int numberOfActors = actors.Count == 0 ? 0 : faker.Random.Int(0, actors.Count);
-                var assignedActors = faker.PickRandom(actors, numberOfActors).ToList();
+                var assignedActors = faker.PickRandom(actors, faker.Random.Int(0, actors.Count)).ToList();
 
-                var assignedReviews = GenerateReviews(faker.Random.Int(0, 15));
 
-                var title = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(faker.Lorem.Sentence(3).Trim('.'));
+                var assignedReviews = faker.PickRandom(GenerateReviews(10), 5).ToList();
+
+                var title = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(faker.Commerce.ProductName());
                 var year = faker.Date.Past(20).Year;
                 var genre = faker.PickRandom(new[]
                 {
@@ -50,15 +50,18 @@ namespace MovieApi.Data
                     MovieDetails = new MovieDetails
                     {
                         Synopsis = faker.Lorem.Sentence(20),
-                        Language = faker.PickRandom(new[]
-                        {
-                            "English", "Swedish", "French", "German", "Japanese"
-                        }),
+                        Language = faker.PickRandom(new[] { "English", "Swedish", "French", "German", "Japanese" }),
                         Budget = faker.Random.Int(20000, 1000000)
                     },
                     Reviews = assignedReviews,
-                    Actors = assignedActors
+                    MovieActors = assignedActors.Select(actor => new MovieActor
+                    {
+                        ActorId = actor.Id,
+                        Actor = actor,
+                        CharacterName = faker.Name.FirstName()
+                    }).ToList()
                 };
+
                 movies.Add(movie);
             }
             return movies;

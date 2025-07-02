@@ -10,6 +10,6 @@
 
         public MovieDetails MovieDetails { get; set; } = null!;
         public ICollection<Review> Reviews { get; set;} = new List<Review>();
-        public ICollection<Actor> Actors { get; set; } = new List<Actor>();
+        public ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
     }
 }

@@ -5,7 +5,7 @@ namespace MovieApi.Models.DTOs
     public class MovieCreateDto
     {
         [Required]
-        [StringLength(20, MinimumLength = 3)]
+        [StringLength(100, MinimumLength = 3)]
         public string Title { get; set; } = null!;
         [Range(1950, 2050)]
         public int Year { get; set; }
