@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Models.Entities;
 using System.Globalization;
