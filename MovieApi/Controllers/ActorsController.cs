@@ -13,7 +13,7 @@ namespace MovieApi.Controllers
         private readonly MovieApiContext _context = context;
 
         [HttpPost()]
-        public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, [FromBody] MovieActorCreateDto dto)
+        public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, [FromBody] MovieActorCreateWithActorIdDto dto)
         {
             var actorExists = await _context.Actors.AnyAsync(a => a.Id == dto.ActorId);
             var movieExists = await _context.Movies.AnyAsync(m => m.Id == movieId);
@@ -52,7 +52,7 @@ namespace MovieApi.Controllers
         }
 
         [HttpPost("{actorId}")]
-        public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, int actorId, [FromBody] AddActorToMovieDto dto)
+        public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, int actorId, [FromBody] MovieActorCreateDto dto)
         {
             var actorExists = await _context.Actors.AnyAsync(a => a.Id == actorId);
             var movieExists = await _context.Movies.AnyAsync(m => m.Id == movieId);
