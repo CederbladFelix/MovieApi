@@ -11,6 +11,7 @@ namespace MovieApi.Data
         }
 
         public DbSet<Movie> Movies { get; set; } = default!;
+        public DbSet<Genre> Genres { get; set; } = default!;
         public DbSet<Actor> Actors { get; set; } = default!;
         public DbSet<Review> Reviews { get; set; } = default!;
         public DbSet<MovieActor> MovieActors { get; set; } = default!;
@@ -34,7 +35,6 @@ namespace MovieApi.Data
 
             modelBuilder.Entity<MovieActor>()
                 .HasKey(ma => new { ma.MovieId, ma.ActorId });
-
 
             modelBuilder.Entity<MovieActor>()
                 .HasOne(ma => ma.Movie)

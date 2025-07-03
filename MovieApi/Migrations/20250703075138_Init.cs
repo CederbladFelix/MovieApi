@@ -46,7 +46,7 @@ namespace MovieApi.Migrations
                 {
                     MovieId = table.Column<int>(type: "int", nullable: false),
                     ActorId = table.Column<int>(type: "int", nullable: false),
-                    CharacterName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

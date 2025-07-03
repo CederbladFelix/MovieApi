@@ -76,7 +76,7 @@ namespace MovieApi.Migrations
                     b.Property<int>("ActorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CharacterName")
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

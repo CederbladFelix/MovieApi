@@ -8,7 +8,7 @@
         public int ActorId { get; set; }
         public Actor Actor { get; set; } = null!;
 
-        public string CharacterName { get; set; } = null!;
+        public string Role { get; set; } = null!;
     }
 
 }

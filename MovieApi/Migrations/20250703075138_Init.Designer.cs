@@ -11,7 +11,7 @@ using MovieApi.Data;
 namespace MovieApi.Migrations
 {
     [DbContext(typeof(MovieApiContext))]
-    [Migration("20250702115920_Init")]
+    [Migration("20250703075138_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -79,7 +79,7 @@ namespace MovieApi.Migrations
                     b.Property<int>("ActorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CharacterName")
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

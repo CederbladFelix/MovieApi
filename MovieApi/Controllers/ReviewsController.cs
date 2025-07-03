@@ -28,7 +28,8 @@ namespace MovieApi.Controllers
                 Rating = r.Rating
             })
             .ToList();
-            return reviewsDto;
+
+            return Ok(reviewsDto);
         }
     }
 }

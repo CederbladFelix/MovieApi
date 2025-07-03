@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
 using MovieApi.Models.DTOs;
@@ -20,14 +15,16 @@ namespace MovieApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
-            var movies = await _context.Movies.ToListAsync();
+            var movies = await _context.Movies
+                .Include(m => m.Genre)
+                .ToListAsync();
 
             var moviesDto = movies.Select(m => new MovieDto
             {
                 Id = m.Id,
                 Title = m.Title,
                 Year = m.Year,
-                Genre = m.Genre,
+                Genre = m.Genre.Name,
                 Duration = m.Duration
             })
             .ToList();
@@ -38,7 +35,10 @@ namespace MovieApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {
-            var movie = await _context.Movies.FindAsync(id);
+            var movie = await _context.Movies
+                .Include(m => m.Genre)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
 
             if (movie == null) return NotFound();
 
@@ -47,11 +47,11 @@ namespace MovieApi.Controllers
                 Id = movie.Id,
                 Title = movie.Title,
                 Year = movie.Year, 
-                Genre = movie.Genre,
+                Genre = movie.Genre.Name,
                 Duration = movie.Duration
             };
 
-            return movieDto;
+            return Ok(movieDto);
         }
 
         [HttpGet("{id}/details")]
@@ -72,43 +72,52 @@ namespace MovieApi.Controllers
                 Id = movie.Id,
                 Title = movie.Title,
                 Year = movie.Year,
-                Genre = movie.Genre,
+                Genre = movie.Genre.Name,
                 Duration = movie.Duration,
                 Synopsis = movie.MovieDetails.Synopsis,
                 Language = movie.MovieDetails.Language,
                 Budget = movie.MovieDetails.Budget,
 
-                Reviews = [.. movie.Reviews
+                Reviews = movie.Reviews
                 .Select(r => new ReviewDto
                 {
                     Id = r.Id,
                     ReviewerName = r.ReviewerName,
                     Comment = r.Comment,
                     Rating = r.Rating
-                })],
+                })
+                .ToList(),
                
-                Actors = [.. movie.MovieActors
+                Actors = movie.MovieActors
                 .Select(ma => new ActorDto
                 {
                     Id = ma.Actor.Id,
                     Name = ma.Actor.Name,
                     BirthYear = ma.Actor.BirthYear
-                })]
+                })
+                .ToList()
             };
 
-            return movieDetailDto;
+            return Ok(movieDetailDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovie(int id, MovieCreateDto dto)
+        public async Task<IActionResult> PutMovie(int id, MovieUpdateDto dto)
         {
             var movie = await _context.Movies.FindAsync(id);
 
             if (movie == null) return NotFound();
-            
+
+            var genreName = dto.Genre.Trim().ToLower();
+            var genre = await _context.Genres
+                .FirstOrDefaultAsync(g => g.Name.ToLower() == genreName);
+
+            if (genre == null)
+                return BadRequest();
+
             movie.Title = dto.Title;
             movie.Year = dto.Year;
-            movie.Genre = dto.Genre;
+            movie.GenreId = genre.Id;
             movie.Duration = dto.Duration;
 
             try
@@ -118,13 +127,9 @@ namespace MovieApi.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!MovieExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
@@ -133,11 +138,19 @@ namespace MovieApi.Controllers
         [HttpPost]
         public async Task<ActionResult<MovieDto>> PostMovie(MovieCreateDto dto)
         {
+
+            var genreName = dto.Genre.Trim().ToLower();
+            var genre = await _context.Genres
+                .FirstOrDefaultAsync(g => g.Name.ToLower() == genreName);
+
+            if (genre == null)
+                return BadRequest();
+
             var movie = new Movie
             {
                 Title = dto.Title,
                 Year = dto.Year,
-                Genre = dto.Genre,
+                GenreId = genre.Id,
                 Duration = dto.Duration
             };
 
@@ -147,10 +160,10 @@ namespace MovieApi.Controllers
             var movieDto = new MovieDto
             {
                 Id = movie.Id,
-                Title = dto.Title,
-                Year = dto.Year,
-                Genre = dto.Genre,
-                Duration = dto.Duration
+                Title = movie.Title,
+                Year = movie.Year,
+                Genre = genre.Name,
+                Duration = movie.Duration
             };
 
             return CreatedAtAction(nameof(GetMovie), new { id = movieDto.Id }, movieDto);

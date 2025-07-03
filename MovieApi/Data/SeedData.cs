@@ -57,7 +57,7 @@ namespace MovieApi.Data
                     {
                         ActorId = actor.Id,
                         Actor = actor,
-                        CharacterName = faker.Name.FirstName()
+                        Role = faker.Name.FirstName()
                     }).ToList()
                 };
 
