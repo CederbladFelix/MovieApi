@@ -108,9 +108,8 @@ namespace MovieApi.Controllers
 
             if (movie == null) return NotFound();
 
-            var genreName = dto.Genre.Trim().ToLower();
             var genre = await _context.Genres
-                .FirstOrDefaultAsync(g => g.Name.ToLower() == genreName);
+                .FirstOrDefaultAsync(g => g.Name.ToLower() == dto.Genre.Trim().ToLower());
 
             if (genre == null)
                 return BadRequest();
@@ -138,10 +137,8 @@ namespace MovieApi.Controllers
         [HttpPost]
         public async Task<ActionResult<MovieDto>> PostMovie(MovieCreateDto dto)
         {
-
-            var genreName = dto.Genre.Trim().ToLower();
             var genre = await _context.Genres
-                .FirstOrDefaultAsync(g => g.Name.ToLower() == genreName);
+                .FirstOrDefaultAsync(g => g.Name.ToLower() == dto.Genre.Trim().ToLower());
 
             if (genre == null)
                 return BadRequest();
