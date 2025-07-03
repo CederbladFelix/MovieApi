@@ -14,5 +14,11 @@ namespace MovieApi.Models.DTOs
         public string Genre { get; set; } = null!;
         [Range(60, 180)]
         public int Duration { get; set; }
+
+        [Required]
+        public string Synopsis { get; set; } = null!;
+        [Required]
+        public string Language { get; set; } = null!;
+        public int Budget { get; set; }
     }
 }

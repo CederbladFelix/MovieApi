@@ -58,6 +58,7 @@ namespace MovieApi.Controllers
         public async Task<ActionResult<MovieDetailDto>> GetMovieDetails(int id)
         {
             var movie = await _context.Movies
+                .Include(m => m.Genre)
                 .Include(m => m.MovieDetails)
                 .Include(m => m.Reviews)
                 .Include(m => m.MovieActors)
@@ -104,7 +105,9 @@ namespace MovieApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie(int id, MovieUpdateDto dto)
         {
-            var movie = await _context.Movies.FindAsync(id);
+            var movie = await _context.Movies
+                .Include(m => m.MovieDetails)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (movie == null) return NotFound();
 
@@ -118,6 +121,13 @@ namespace MovieApi.Controllers
             movie.Year = dto.Year;
             movie.GenreId = genre.Id;
             movie.Duration = dto.Duration;
+
+            if (movie.MovieDetails != null)
+            {
+                movie.MovieDetails.Synopsis = dto.Synopsis;
+                movie.MovieDetails.Language = dto.Language;
+                movie.MovieDetails.Budget = dto.Budget;
+            }
 
             try
             {
@@ -148,7 +158,14 @@ namespace MovieApi.Controllers
                 Title = dto.Title,
                 Year = dto.Year,
                 GenreId = genre.Id,
-                Duration = dto.Duration
+                Duration = dto.Duration,
+
+                MovieDetails = new MovieDetails
+                {
+                    Synopsis = dto.Synopsis,
+                    Language = dto.Language,
+                    Budget = dto.Budget
+                }
             };
 
             _context.Movies.Add(movie);

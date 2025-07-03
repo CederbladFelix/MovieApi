@@ -51,7 +51,7 @@ namespace MovieApi.Controllers
 
         }
 
-        [HttpPost("{actorId}")]
+        [HttpPost("with-actor/{actorId}")]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, int actorId, [FromBody] MovieActorCreateDto dto)
         {
             var actorExists = await _context.Actors.AnyAsync(a => a.Id == actorId);

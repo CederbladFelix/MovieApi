@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Bogus.DataSets;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Models.Entities;
 using System.Globalization;
@@ -95,22 +96,14 @@ namespace MovieApi.Data
 
         private static List<Actor> GenerateActors(int numberOfActors)
         {
-            var actors = new List<Actor>();
-
-            for (int i = 0; i < numberOfActors; i++)
-            {
-                var name = faker.Name.FullName();
-                var birthYear = faker.Date.Past(80, DateTime.Today.AddYears(-18)).Year;
-                var actor = new Actor
+            return Enumerable.Range(1, numberOfActors)
+                .Select(_ => new Actor
                 {
-                    Name = name,
-                    BirthYear = birthYear
-                };
-                actors.Add(actor);
-                
-            }
+                    Name = faker.Name.FullName(),
+                    BirthYear = faker.Date.Past(80, DateTime.Today.AddYears(-18)).Year
+                })
+                .ToList();
 
-            return actors;
         }
 
         private static List<Review> GenerateReviews(int numberOfReviews)
