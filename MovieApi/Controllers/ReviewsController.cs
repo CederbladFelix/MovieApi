@@ -6,6 +6,7 @@ using MovieApi.Models.DTOs;
 namespace MovieApi.Controllers
 {
     [ApiController]
+    [Produces("application/json")]
     public class ReviewsController(MovieApiContext context) : ControllerBase
     {
         private readonly MovieApiContext _context = context;
@@ -13,21 +14,21 @@ namespace MovieApi.Controllers
         [HttpGet("api/movies/{movieId}/reviews")]
         public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReview(int movieId)
         {
-            var reviews = await _context.Reviews
-                .Where(r => r.MovieId == movieId)
-                .ToListAsync();
-
-            if (reviews.Count == 0)
+            var movieExists = await _context.Movies.AnyAsync(m => m.Id == movieId);
+            
+            if (!movieExists) 
                 return NotFound();
 
-            var reviewsDto = reviews.Select(r => new ReviewDto
-            {
-                Id = r.Id,
-                ReviewerName = r.ReviewerName,
-                Comment = r.Comment,
-                Rating = r.Rating
-            })
-            .ToList();
+            var reviewsDto = await _context.Reviews
+                .Where(r => r.MovieId == movieId)
+                .Select(r => new ReviewDto
+                {
+                    Id = r.Id,
+                    ReviewerName = r.ReviewerName,
+                    Comment = r.Comment,
+                    Rating = r.Rating
+                })
+            .ToListAsync();
 
             return Ok(reviewsDto);
         }

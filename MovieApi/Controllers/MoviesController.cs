@@ -8,6 +8,7 @@ namespace MovieApi.Controllers
 {
     [Route("api/movies")]
     [ApiController]
+    [Produces("application/json")]
     public class MoviesController(MovieApiContext context) : ControllerBase
     {
         private readonly MovieApiContext _context = context;
@@ -15,19 +16,16 @@ namespace MovieApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
-            var movies = await _context.Movies
-                .Include(m => m.Genre)
+            var moviesDto = await _context.Movies
+                .Select(m => new MovieDto
+                {
+                    Id = m.Id,
+                    Title = m.Title,
+                    Year = m.Year,
+                    Genre = m.Genre.Name,
+                    Duration = m.Duration
+                })
                 .ToListAsync();
-
-            var moviesDto = movies.Select(m => new MovieDto
-            {
-                Id = m.Id,
-                Title = m.Title,
-                Year = m.Year,
-                Genre = m.Genre.Name,
-                Duration = m.Duration
-            })
-            .ToList();
 
             return Ok(moviesDto);
         }
@@ -35,21 +33,20 @@ namespace MovieApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {
-            var movie = await _context.Movies
-                .Include(m => m.Genre)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var movieDto = await _context.Movies
+                .Where(m => m.Id == id)
+                .Select(m => new MovieDto
+                {
+                    Id = m.Id,
+                    Title = m.Title,
+                    Year = m.Year,
+                    Genre = m.Genre.Name, 
+                    Duration = m.Duration
+                })
+                .FirstOrDefaultAsync();
 
-
-            if (movie == null) return NotFound();
-
-            var movieDto = new MovieDto
-            {
-                Id = movie.Id,
-                Title = movie.Title,
-                Year = movie.Year, 
-                Genre = movie.Genre.Name,
-                Duration = movie.Duration
-            };
+            if (movieDto == null) 
+                return NotFound();
 
             return Ok(movieDto);
         }
@@ -57,47 +54,43 @@ namespace MovieApi.Controllers
         [HttpGet("{id}/details")]
         public async Task<ActionResult<MovieDetailDto>> GetMovieDetails(int id)
         {
-            var movie = await _context.Movies
-                .Include(m => m.Genre)
-                .Include(m => m.MovieDetails)
-                .Include(m => m.Reviews)
-                .Include(m => m.MovieActors)
-                    .ThenInclude(ma => ma.Actor)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-
-            if (movie == null) return NotFound();
-
-            var movieDetailDto = new MovieDetailDto
-            {
-                Id = movie.Id,
-                Title = movie.Title,
-                Year = movie.Year,
-                Genre = movie.Genre.Name,
-                Duration = movie.Duration,
-                Synopsis = movie.MovieDetails.Synopsis,
-                Language = movie.MovieDetails.Language,
-                Budget = movie.MovieDetails.Budget,
-
-                Reviews = movie.Reviews
-                .Select(r => new ReviewDto
+            var movieDetailDto = await _context.Movies
+                .Where(m => m.Id == id)
+                .Select(m => new MovieDetailDto
                 {
-                    Id = r.Id,
-                    ReviewerName = r.ReviewerName,
-                    Comment = r.Comment,
-                    Rating = r.Rating
+                    Id = m.Id,
+                    Title = m.Title,
+                    Year = m.Year,
+                    Genre = m.Genre.Name,
+                    Duration = m.Duration,
+                    Synopsis = m.MovieDetails.Synopsis,
+                    Language = m.MovieDetails.Language,
+                    Budget = m.MovieDetails.Budget,
+
+                    Reviews = m.Reviews
+                        .Select(r => new ReviewDto
+                        {
+                            Id = r.Id,
+                            ReviewerName = r.ReviewerName,
+                            Comment = r.Comment,
+                            Rating = r.Rating
+                        })
+                        .ToList(),
+
+                    Actors = m.MovieActors
+                        .Select(ma => new ActorDto
+                        {
+                            Id = ma.Actor.Id,
+                            Name = ma.Actor.Name,
+                            BirthYear = ma.Actor.BirthYear
+                        })
+                        .ToList()
                 })
-                .ToList(),
-               
-                Actors = movie.MovieActors
-                .Select(ma => new ActorDto
-                {
-                    Id = ma.Actor.Id,
-                    Name = ma.Actor.Name,
-                    BirthYear = ma.Actor.BirthYear
-                })
-                .ToList()
-            };
+                .FirstOrDefaultAsync();
+
+
+            if (movieDetailDto == null) 
+                return NotFound();
 
             return Ok(movieDetailDto);
         }
@@ -109,7 +102,8 @@ namespace MovieApi.Controllers
                 .Include(m => m.MovieDetails)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (movie == null) return NotFound();
+            if (movie == null) 
+                return NotFound();
 
             var genre = await _context.Genres
                 .FirstOrDefaultAsync(g => g.Name.ToLower() == dto.Genre.Trim().ToLower());
@@ -119,15 +113,13 @@ namespace MovieApi.Controllers
 
             movie.Title = dto.Title;
             movie.Year = dto.Year;
-            movie.GenreId = genre.Id;
+            movie.Genre = genre;
             movie.Duration = dto.Duration;
 
-            if (movie.MovieDetails != null)
-            {
-                movie.MovieDetails.Synopsis = dto.Synopsis;
-                movie.MovieDetails.Language = dto.Language;
-                movie.MovieDetails.Budget = dto.Budget;
-            }
+            movie.MovieDetails.Synopsis = dto.Synopsis;
+            movie.MovieDetails.Language = dto.Language;
+            movie.MovieDetails.Budget = dto.Budget;
+            
 
             try
             {
@@ -157,7 +149,7 @@ namespace MovieApi.Controllers
             {
                 Title = dto.Title,
                 Year = dto.Year,
-                GenreId = genre.Id,
+                Genre = genre,
                 Duration = dto.Duration,
 
                 MovieDetails = new MovieDetails
@@ -187,10 +179,9 @@ namespace MovieApi.Controllers
         public async Task<IActionResult> DeleteMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
+
             if (movie == null)
-            {
                 return NotFound();
-            }
 
             _context.Movies.Remove(movie);
             await _context.SaveChangesAsync();

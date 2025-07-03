@@ -33,24 +33,17 @@ namespace MovieApi.Data
 
             for (int i = 0; i < numberOfMovies; i++)
             {
-                var assignedActors = faker.PickRandom(actors, faker.Random.Int(0, actors.Count)).ToList();
-
-
-                var assignedReviews = faker.PickRandom(GenerateReviews(10), 5).ToList();
-
-                var title = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(faker.Commerce.ProductName());
-                var year = faker.Date.Past(20).Year;
-                var genre = faker.PickRandom(genres);
-
-                var duration = faker.Random.Int(60, 180);
+                var assignedActors = faker.PickRandom(actors, faker.Random.Int(0, actors.Count))
+                                          .ToList();
+                var assignedReviews = faker.PickRandom(GenerateReviews(10), 5)
+                                          .ToList();
 
                 var movie = new Movie
                 {
-                    Title = title,
-                    Year = year,
-                    GenreId = genre.Id,
-                    Genre = genre,
-                    Duration = duration,
+                    Title = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(faker.Commerce.ProductName()),
+                    Year = faker.Date.Past(20).Year,
+                    Genre = faker.PickRandom(genres),
+                    Duration = faker.Random.Int(60, 180),
 
                     MovieDetails = new MovieDetails
                     {
@@ -61,14 +54,15 @@ namespace MovieApi.Data
 
                     Reviews = assignedReviews,
 
-                    MovieActors = assignedActors.Select(actor => new MovieActor
-                    {
-                        ActorId = actor.Id,
-                        Actor = actor,
-                        Role = faker.Name.FirstName()
-                    })
-                    .ToList()
                 };
+
+                movie.MovieActors = assignedActors.Select(actor => new MovieActor
+                {
+                    Movie = movie,
+                    Actor = actor,
+                    Role = faker.Name.FirstName()
+                })
+                .ToList();
 
                 movies.Add(movie);
             }
