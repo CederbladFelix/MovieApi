@@ -6,7 +6,6 @@ namespace MovieApi.Models.DTOs
     {
         public int MovieId { get; set; }
         public int ActorId { get; set; }
-        [Required]
         public string Role { get; set; } = null!;
     }
 }

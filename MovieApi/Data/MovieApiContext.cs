@@ -28,6 +28,11 @@ namespace MovieApi.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Movie>()
+                .HasOne(m => m.Genre)
+                .WithMany(g => g.Movies)
+                .HasForeignKey(m => m.GenreId);
+
+            modelBuilder.Entity<Movie>()
                 .HasMany(m => m.Reviews)
                 .WithOne(r => r.Movie)
                 .HasForeignKey(r => r.MovieId)
@@ -39,14 +44,14 @@ namespace MovieApi.Data
             modelBuilder.Entity<MovieActor>()
                 .HasOne(ma => ma.Movie)
                 .WithMany(m => m.MovieActors)
-                .HasForeignKey(ma => ma.MovieId);
+                .HasForeignKey(ma => ma.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<MovieActor>()
                 .HasOne(ma => ma.Actor)
                 .WithMany(a => a.MovieActors)
-                .HasForeignKey(ma => ma.ActorId);
-
-
+                .HasForeignKey(ma => ma.ActorId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
