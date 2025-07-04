@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MovieApi.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace MovieApi.Models.DTOs
 {
@@ -12,7 +13,7 @@ namespace MovieApi.Models.DTOs
         public int Year { get; set; }
 
         [Required]
-        [StringLength(100, MinimumLength = 3)]
+        [ValidGenre]
         public string Genre { get; set; } = null!;
 
         [Range(60, 180)]
