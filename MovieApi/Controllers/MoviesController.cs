@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
@@ -21,11 +22,10 @@ namespace MovieApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
-            var movies = await _context.Movies
-                .Include(m => m.Genre)
+            var moviesDto = await _context.Movies
+                .ProjectTo<MovieDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
-            var moviesDto = _mapper.Map<List<MovieDto>>(movies);
             return Ok(moviesDto);
         }
 
@@ -34,14 +34,15 @@ namespace MovieApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {
-            var movie = await _context.Movies
-                .Include(m => m.Genre)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var movieDto = await _context.Movies
+                .Where(m => m.Id == id)
+                .ProjectTo<MovieDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
 
-            if (movie == null)
+            if (movieDto == null)
                 return NotFound();
 
-            return Ok(_mapper.Map<MovieDto>(movie));
+            return Ok(movieDto);
         }
 
         [HttpGet("{id}/details")]
@@ -49,18 +50,15 @@ namespace MovieApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDetailDto>> GetMovieDetails(int id)
         {
-            var movie = await _context.Movies
-                .Include(m => m.Genre)
-                .Include(m => m.MovieDetails)
-                .Include(m => m.Reviews)
-                .Include(m => m.MovieActors)
-                    .ThenInclude(ma => ma.Actor)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var movieDto = await _context.Movies
+                .Where(m => m.Id == id)
+                .ProjectTo<MovieDetailDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
 
-            if (movie == null)
+            if (movieDto == null)
                 return NotFound();
 
-            return Ok(_mapper.Map<MovieDetailDto>(movie));
+            return Ok(movieDto);
         }
 
         [HttpPut("{id}")]

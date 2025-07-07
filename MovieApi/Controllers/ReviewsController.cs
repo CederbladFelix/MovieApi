@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
@@ -20,16 +21,14 @@ namespace MovieApi.Controllers
         public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReview(int movieId)
         {
             var movieExists = await _context.Movies.AnyAsync(m => m.Id == movieId);
-            
-            if (!movieExists) 
+
+            if (!movieExists)
                 return NotFound();
 
-
-            var reviews = await _context.Reviews
+            var reviewsDto = await _context.Reviews
                 .Where(r => r.MovieId == movieId)
+                .ProjectTo<ReviewDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
-
-            var reviewsDto = _mapper.Map<List<ReviewDto>>(reviews);
 
             return Ok(reviewsDto);
         }
