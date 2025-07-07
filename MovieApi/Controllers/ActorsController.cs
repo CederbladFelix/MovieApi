@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
 using MovieApi.Models.DTOs;
 using MovieApi.Models.Entities;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MovieApi.Controllers
 {
@@ -16,6 +17,9 @@ namespace MovieApi.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpPost]
+        [SwaggerOperation(Summary = "Connect actor to movie", Description = "Connect actor to a movie.", Tags = ["Movie"])]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieActorDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, [FromBody] MovieActorCreateWithActorIdDto dto)
         {
             var actorExists = await _context.Actors.AnyAsync(a => a.Id == dto.ActorId);
@@ -43,6 +47,9 @@ namespace MovieApi.Controllers
         }
 
         [HttpPost("with-actor/{actorId}")]
+        [SwaggerOperation(Summary = "Connect actor to movie", Description = "Connect actor to a movie.", Tags = ["Movie"])]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieActorDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, int actorId, [FromBody] MovieActorCreateDto dto)
         {
             var actorExists = await _context.Actors.AnyAsync(a => a.Id == actorId);
