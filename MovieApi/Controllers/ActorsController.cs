@@ -17,7 +17,7 @@ namespace MovieApi.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpPost]
-        [SwaggerOperation(Summary = "Connect actor to movie", Description = "Connect actor to a movie.", Tags = ["Movie"])]
+        [SwaggerOperation(Summary = "Connect actor to movie", Description = "Connect actor to a movie.", Tags = ["Movie", "Actor"])]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieActorDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, [FromBody] MovieActorCreateWithActorIdDto dto)
@@ -47,7 +47,7 @@ namespace MovieApi.Controllers
         }
 
         [HttpPost("with-actor/{actorId}")]
-        [SwaggerOperation(Summary = "Connect actor to movie", Description = "Connect actor to a movie.", Tags = ["Movie"])]
+        [SwaggerOperation(Summary = "Connect actor to movie", Description = "Connect actor to a movie.", Tags = ["Movie", "Actor"])]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieActorDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, int actorId, [FromBody] MovieActorCreateDto dto)
