@@ -21,14 +21,14 @@ namespace MovieApi.Models.DTOs
 
         [Required]
         [StringLength(1000)]
-        public string Synopsis { get; set; } = null!;
+        public string MovieDetailsSynopsis { get; set; } = null!;
 
         [Required]
         [StringLength(50)]
-        public string Language { get; set; } = null!;
+        public string MovieDetailsLanguage { get; set; } = null!;
 
         [Range(0, 1_000_000_000)]
-        public int Budget { get; set; }
+        public int MovieDetailsBudget { get; set; }
     }
 
 }

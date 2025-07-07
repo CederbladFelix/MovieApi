@@ -1,125 +1,87 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
 using MovieApi.Models.DTOs;
 using MovieApi.Models.Entities;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MovieApi.Controllers
 {
     [Route("api/movies")]
     [ApiController]
     [Produces("application/json")]
-    public class MoviesController(MovieApiContext context) : ControllerBase
+    public class MoviesController(MovieApiContext context, IMapper mapper) : ControllerBase
     {
         private readonly MovieApiContext _context = context;
+        private readonly IMapper _mapper = mapper;
 
         [HttpGet]
+        [SwaggerOperation(Summary = "Get all movies", Description = "Gets all movies.")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
-            var moviesDto = await _context.Movies
-                .Select(m => new MovieDto
-                {
-                    Id = m.Id,
-                    Title = m.Title,
-                    Year = m.Year,
-                    Genre = m.Genre.Name,
-                    Duration = m.Duration
-                })
+            var movies = await _context.Movies
+                .Include(m => m.Genre)
                 .ToListAsync();
 
+            var moviesDto = _mapper.Map<List<MovieDto>>(movies);
             return Ok(moviesDto);
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Get movie by ID", Description = "Returns a specified movie.")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {
-            var movieDto = await _context.Movies
-                .Where(m => m.Id == id)
-                .Select(m => new MovieDto
-                {
-                    Id = m.Id,
-                    Title = m.Title,
-                    Year = m.Year,
-                    Genre = m.Genre.Name, 
-                    Duration = m.Duration
-                })
-                .FirstOrDefaultAsync();
+            var movie = await _context.Movies
+                .Include(m => m.Genre)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (movieDto == null) 
+            if (movie == null)
                 return NotFound();
 
-            return Ok(movieDto);
+            return Ok(_mapper.Map<MovieDto>(movie));
         }
 
         [HttpGet("{id}/details")]
+        [SwaggerOperation(Summary = "Get moviedetails by ID", Description = "Returns full details of a movie.")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDetailDto>> GetMovieDetails(int id)
         {
-            var movieDetailDto = await _context.Movies
-                .Where(m => m.Id == id)
-                .Select(m => new MovieDetailDto
-                {
-                    Id = m.Id,
-                    Title = m.Title,
-                    Year = m.Year,
-                    Genre = m.Genre.Name,
-                    Duration = m.Duration,
-                    Synopsis = m.MovieDetails.Synopsis,
-                    Language = m.MovieDetails.Language,
-                    Budget = m.MovieDetails.Budget,
+            var movie = await _context.Movies
+                .Include(m => m.Genre)
+                .Include(m => m.MovieDetails)
+                .Include(m => m.Reviews)
+                .Include(m => m.MovieActors)
+                    .ThenInclude(ma => ma.Actor)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-                    Reviews = m.Reviews
-                        .Select(r => new ReviewDto
-                        {
-                            Id = r.Id,
-                            ReviewerName = r.ReviewerName,
-                            Comment = r.Comment,
-                            Rating = r.Rating
-                        })
-                        .ToList(),
-
-                    Actors = m.MovieActors
-                        .Select(ma => new ActorDto
-                        {
-                            Id = ma.Actor.Id,
-                            Name = ma.Actor.Name,
-                            BirthYear = ma.Actor.BirthYear
-                        })
-                        .ToList()
-                })
-                .FirstOrDefaultAsync();
-
-
-            if (movieDetailDto == null) 
+            if (movie == null)
                 return NotFound();
 
-            return Ok(movieDetailDto);
+            return Ok(_mapper.Map<MovieDetailDto>(movie));
         }
 
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Update movie", Description = "Updates an existing movie by ID.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> PutMovie(int id, MovieUpdateDto dto)
         {
             var movie = await _context.Movies
                 .Include(m => m.MovieDetails)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (movie == null) 
+            if (movie == null)
                 return NotFound();
 
             var genre = await _context.Genres
-                .FirstOrDefaultAsync(g => g.Name.ToLower() == dto.Genre.Trim().ToLower());
+                .FirstAsync(g => g.Name == dto.Genre.Trim());
 
-            if (genre == null)
-                return BadRequest();
-
-            movie.Title = dto.Title;
-            movie.Year = dto.Year;
+            _mapper.Map(dto, movie);
             movie.Genre = genre;
-            movie.Duration = dto.Duration;
-
-            movie.MovieDetails.Synopsis = dto.Synopsis;
-            movie.MovieDetails.Language = dto.Language;
-            movie.MovieDetails.Budget = dto.Budget;
-            
 
             try
             {
@@ -137,45 +99,30 @@ namespace MovieApi.Controllers
         }
 
         [HttpPost]
+        [SwaggerOperation(Summary = "Create movie", Description = "Creates a new movie.", Tags = ["Movie"])]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieDto>> PostMovie(MovieCreateDto dto)
         {
             var genre = await _context.Genres
-                .FirstOrDefaultAsync(g => g.Name.ToLower() == dto.Genre.Trim().ToLower());
+                .FirstAsync(g => g.Name == dto.Genre.Trim());
 
-            if (genre == null)
-                return BadRequest();
+            var movie = _mapper.Map<Movie>(dto);
+            movie.Genre = genre;
 
-            var movie = new Movie
-            {
-                Title = dto.Title,
-                Year = dto.Year,
-                Genre = genre,
-                Duration = dto.Duration,
-
-                MovieDetails = new MovieDetails
-                {
-                    Synopsis = dto.Synopsis,
-                    Language = dto.Language,
-                    Budget = dto.Budget
-                }
-            };
 
             _context.Movies.Add(movie);
             await _context.SaveChangesAsync();
 
-            var movieDto = new MovieDto
-            {
-                Id = movie.Id,
-                Title = movie.Title,
-                Year = movie.Year,
-                Genre = genre.Name,
-                Duration = movie.Duration
-            };
+            var movieDto = _mapper.Map<MovieDto>(movie);
 
             return CreatedAtAction(nameof(GetMovie), new { id = movieDto.Id }, movieDto);
         }
 
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Delete movie", Description = "Deletes a movie by ID.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);

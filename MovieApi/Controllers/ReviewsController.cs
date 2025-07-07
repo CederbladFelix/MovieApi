@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
 using MovieApi.Models.DTOs;
@@ -7,9 +8,10 @@ namespace MovieApi.Controllers
 {
     [ApiController]
     [Produces("application/json")]
-    public class ReviewsController(MovieApiContext context) : ControllerBase
+    public class ReviewsController(MovieApiContext context, IMapper mapper) : ControllerBase
     {
         private readonly MovieApiContext _context = context;
+        private readonly IMapper _mapper = mapper;
 
         [HttpGet("api/movies/{movieId}/reviews")]
         public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReview(int movieId)
@@ -19,16 +21,12 @@ namespace MovieApi.Controllers
             if (!movieExists) 
                 return NotFound();
 
-            var reviewsDto = await _context.Reviews
+
+            var reviews = await _context.Reviews
                 .Where(r => r.MovieId == movieId)
-                .Select(r => new ReviewDto
-                {
-                    Id = r.Id,
-                    ReviewerName = r.ReviewerName,
-                    Comment = r.Comment,
-                    Rating = r.Rating
-                })
-            .ToListAsync();
+                .ToListAsync();
+
+            var reviewsDto = _mapper.Map<List<ReviewDto>>(reviews);
 
             return Ok(reviewsDto);
         }

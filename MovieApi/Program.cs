@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using MovieApi.Data;
 using MovieApi.Extensions;
-using System.Threading.Tasks;
+using MovieApi.Mappings;
 
 namespace MovieApi
 {
@@ -14,18 +14,32 @@ namespace MovieApi
             builder.Services.AddDbContext<MovieApiContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MovieApiContext") ?? throw new InvalidOperationException("Connection string 'MovieApiContext' not found.")));
 
+
             // Add services to the container.
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+
+            builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<MapperProfile>();
+            });
+
+            builder.Services.AddSwaggerGen(opt =>
+            {
+                opt.EnableAnnotations();
+            });
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI(opt =>
+                {
+                    opt.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                });
                 await app.SeedDataAsync();
             }
 

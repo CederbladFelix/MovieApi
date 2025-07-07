@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
 using MovieApi.Models.DTOs;
@@ -9,11 +10,12 @@ namespace MovieApi.Controllers
     [Route("api/movies/{movieId}/actors")]
     [ApiController]
     [Produces("application/json")]
-    public class ActorsController(MovieApiContext context) : ControllerBase
+    public class ActorsController(MovieApiContext context, IMapper mapper) : ControllerBase
     {
         private readonly MovieApiContext _context = context;
+        private readonly IMapper _mapper = mapper;
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, [FromBody] MovieActorCreateWithActorIdDto dto)
         {
             var actorExists = await _context.Actors.AnyAsync(a => a.Id == dto.ActorId);
@@ -28,28 +30,16 @@ namespace MovieApi.Controllers
             if (actorAlreadyInMovie)
                 return Conflict();
 
-            var movieActor = new MovieActor
-            {
-                MovieId = movieId,
-                ActorId = dto.ActorId,
-                Role = dto.Role
-            };
+            var movieActor = _mapper.Map<MovieActor>(dto);
+            movieActor.MovieId = movieId;
 
             _context.MovieActors.Add(movieActor);
             await _context.SaveChangesAsync();
 
-            var movieActorDto = new MovieActorDto
-            {
-                MovieId = movieActor.MovieId,
-                ActorId = movieActor.ActorId,
-                Role = movieActor.Role
-            };
-
             return Created(
                 $"/api/movies/{movieId}/actors/{dto.ActorId}",
-                movieActorDto
+                _mapper.Map<MovieActorDto>(movieActor)
             );
-
         }
 
         [HttpPost("with-actor/{actorId}")]
@@ -67,26 +57,16 @@ namespace MovieApi.Controllers
             if (actorAlreadyInMovie)
                 return Conflict();
 
-            var movieActor = new MovieActor
-            {
-                MovieId = movieId,
-                ActorId = actorId,
-                Role = dto.Role
-            };
+            var movieActor = _mapper.Map<MovieActor>(dto);
+            movieActor.MovieId = movieId;
+            movieActor.ActorId = actorId;
 
             _context.MovieActors.Add(movieActor);
             await _context.SaveChangesAsync();
 
-            var movieActorDto = new MovieActorDto
-            {
-                MovieId = movieActor.MovieId,
-                ActorId = movieActor.ActorId,
-                Role = movieActor.Role
-            };
-
             return Created(
                 $"/api/movies/{movieId}/actors/{actorId}",
-                movieActorDto
+                _mapper.Map<MovieActorDto>(movieActor)
             );
         }
     }

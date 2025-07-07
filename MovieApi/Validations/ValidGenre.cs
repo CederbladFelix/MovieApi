@@ -4,20 +4,18 @@ namespace MovieApi.Validations
 {
     public class ValidGenre : ValidationAttribute
     {
-        private readonly List<string> genreNames = new()
+        private static readonly HashSet<string> AllowedGenres = new()
         {
             "Action", "Drama", "Comedy", "Horror", "Documentary", "Fantasy"
         };
 
-        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        public override bool IsValid(object? value)
         {
-            if (value is string input)
-            {
-                if (genreNames.Contains(input))
-                    return ValidationResult.Success;
-            }
+            if (value is not string genre || string.IsNullOrWhiteSpace(genre))
+                return false;
 
-            return new ValidationResult($"Invalid genre. Allowed genres: {string.Join(", ", genreNames)}");
+            return AllowedGenres.Contains(genre.Trim());
         }
+
     }
 }
