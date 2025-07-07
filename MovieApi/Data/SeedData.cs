@@ -15,14 +15,13 @@ namespace MovieApi.Data
 
             var genres = GenerateGenres();
             await context.AddRangeAsync(genres);
-            await context.SaveChangesAsync();
 
             var actors = GenerateActors(10);
             await context.AddRangeAsync(actors);
-            await context.SaveChangesAsync();
 
             var movies = GenerateMovies(10, actors, genres);
             await context.AddRangeAsync(movies);
+
             await context.SaveChangesAsync();
         }
 
