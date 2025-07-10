@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Movies.Core.DomainContracts;
+using Movies.Core.Models.DTOs;
 using Movies.Core.Models.Entities;
 using Movies.Data.Data;
 
@@ -10,17 +11,62 @@ namespace Movies.Data.Repositories
 
         public MovieRepository(MovieApiContext movieApiContext) : base(movieApiContext) { }
 
-        public async Task<IEnumerable<Movie>> GetAllAsync(bool includeGenre = false)
+        public async Task<IEnumerable<Movie>> GetAllAsync()
         {
-            return includeGenre ? await Db.Include(m => m.Genre).ToListAsync() :
-                                  await Db.ToListAsync();
+            return await Db.Include(m => m.Genre).ToListAsync();
         }
 
-        public async Task<Movie?> GetAsync(int id, bool includeGenre = false)
+        public async Task<Movie?> GetAsync(int id)
         {
-            return includeGenre ? await Db.Where(m => m.Id == id).Include(m => m.Genre).FirstOrDefaultAsync() :
-                                  await Db.FirstOrDefaultAsync();
+            return await Db.Where(m => m.Id == id).Include(m => m.Genre).FirstOrDefaultAsync(); 
         }
+
+        public async Task<IEnumerable<Movie>> GetMoviesWithQueryOptionsAsync(MovieQueryOptions options)
+        {
+            IQueryable<Movie> query = Db;
+
+            if (options.IncludeGenre)
+                query = query.Include(m => m.Genre);
+
+            if (options.IncludeDetails)
+                query = query.Include(m => m.MovieDetails);
+
+            if (options.IncludeReviews)
+                query = query.Include(m => m.Reviews);
+
+            if (options.IncludeActors)
+                query = query.Include(m => m.MovieActors)
+                             .ThenInclude(m => m.Actor);
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<Movie?> GetMovieWithQueryOptionsAsync(int id, MovieQueryOptions options)
+        {
+            IQueryable<Movie> query = Db.Where(m => m.Id == id);
+
+            if (options.IncludeGenre)
+                query = query.Include(m => m.Genre);
+
+            if (options.IncludeDetails)
+                query = query.Include(m => m.MovieDetails);
+
+            if (options.IncludeReviews)
+                query = query.Include(m => m.Reviews);
+
+            if (options.IncludeActors)
+                query = query.Include(m => m.MovieActors)
+                             .ThenInclude(m => m.Actor);
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<Genre> GetGenreByNameAsync(string genreName)
+        {
+            return await Context.Set<Genre>()
+                .FirstAsync(g => g.Name == genreName);
+        }
+
         public async Task<bool> AnyAsync(int id)
         {
             return await Db.AnyAsync(m => m.Id == id);
