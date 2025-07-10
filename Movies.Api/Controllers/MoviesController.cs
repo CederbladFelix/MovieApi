@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Movies.Core.DomainContracts;
 using Movies.Core.Models.DTOs;
 using Movies.Core.Models.Entities;
 using Movies.Data.Data;
@@ -12,8 +13,9 @@ namespace Movies.Api.Controllers
     [Route("api/movies")]
     [ApiController]
     [Produces("application/json")]
-    public class MoviesController(MovieApiContext context, IMapper mapper) : ControllerBase
+    public class MoviesController(IUnitOfWork unitOfWork, MovieApiContext context, IMapper mapper) : ControllerBase
     {
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly MovieApiContext _context = context;
         private readonly IMapper _mapper = mapper;
 
@@ -22,9 +24,11 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
-            var moviesDto = await _context.Movies
-                .ProjectTo<MovieDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            //var moviesDto = await _context.Movies
+            //    .ProjectTo<MovieDto>(_mapper.ConfigurationProvider)
+            //    .ToListAsync();
+            var movies = await _unitOfWork.Movies.GetAllAsync(includeGenre: true);
+            var moviesDto = _mapper.Map<IEnumerable<MovieDto>>(movies);
 
             return Ok(moviesDto);
         }
@@ -33,14 +37,17 @@ namespace Movies.Api.Controllers
         [SwaggerOperation(Summary = "Get movie by ID", Description = "Returns a specified movie.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
-        {
-            var movieDto = await _context.Movies
-                .Where(m => m.Id == id)
-                .ProjectTo<MovieDto>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync();
+        {          
+            //var movieDto = await _context.Movies
+            //    .Where(m => m.Id == id)
+            //    .ProjectTo<MovieDto>(_mapper.ConfigurationProvider)
+            //    .FirstOrDefaultAsync();
 
-            if (movieDto == null)
+            var movie = await _unitOfWork.Movies.GetAsync(id, includeGenre: true);
+            if (movie == null)
                 return NotFound();
+
+            var movieDto = _mapper.Map<MovieDto>(movie);
 
             return Ok(movieDto);
         }
