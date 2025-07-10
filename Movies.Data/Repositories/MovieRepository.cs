@@ -7,40 +7,21 @@ namespace Movies.Data.Repositories
 {
     public class MovieRepository : Repository<Movie>, IMovieRepository
     {
-        private readonly MovieApiContext movieApiContext;
 
-        public MovieRepository(MovieApiContext movieApiContext)
-        {
-            this.movieApiContext = movieApiContext;
-        }
+        public MovieRepository(MovieApiContext movieApiContext) : base(movieApiContext) { }
 
         public async Task<IEnumerable<Movie>> GetAllAsync()
         {
-            return await movieApiContext.Movies.ToListAsync();
+            return await Db.ToListAsync();
         }
 
-        public async Task<Movie> GetAsync(int id)
+        public async Task<Movie?> GetAsync(int id)
         {
-            return await movieApiContext.Movies.FirstAsync(m => m.Id == id);
+            return await Db.FirstOrDefaultAsync(m => m.Id == id);
         }
         public async Task<bool> AnyAsync(int id)
         {
-            return await movieApiContext.Movies.AnyAsync(m => m.Id == id);
-        }
-
-        public void Add(Movie movie)
-        {
-            movieApiContext.Movies.Add(movie);
-        }
-
-        public void Delete(Movie movie)
-        {
-            movieApiContext.Movies.Remove(movie);
-        }
-
-        public void Update(Movie movie)
-        {
-            movieApiContext.Movies.Update(movie);
+            return await Db.AnyAsync(m => m.Id == id);
         }
     }
 }
