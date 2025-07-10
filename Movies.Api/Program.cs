@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Movies.Api.Extensions;
+using Movies.Core.DomainContracts;
 using Movies.Data.Data;
 
 namespace Movies.Api
@@ -9,28 +10,19 @@ namespace Movies.Api
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+                     
             builder.Services.AddDbContext<MovieApiContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("MovieApiContext") ?? throw new InvalidOperationException("Connection string 'MovieApiContext' not found.")));
-
-
-            // Add services to the container.
-
+                options.UseSqlServer(builder.Configuration.GetConnectionString("MovieApiContext") ?? 
+                throw new InvalidOperationException("Connection string 'MovieApiContext' not found.")));
+            
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
-            builder.Services.AddAutoMapper(cfg =>
-            {
-                cfg.AddProfile<MapperProfile>();
-            });
-
-            builder.Services.AddSwaggerGen(opt =>
-            {
-                opt.EnableAnnotations();
-            });
+            builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MapperProfile>());
+            builder.Services.AddSwaggerGen(opt => opt.EnableAnnotations());
+            builder.Services.AddScoped<IUnitOfWork, IUnitOfWork>();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -42,13 +34,10 @@ namespace Movies.Api
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
+
         }
     }
 }

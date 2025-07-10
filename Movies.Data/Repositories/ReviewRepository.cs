@@ -17,11 +17,11 @@ namespace Movies.Data.Repositories
 
         public async Task<Review?> GetAsync(int id)
         {
-            return await Db.FirstOrDefaultAsync(a => a.Id == id);
+            return await Db.FirstOrDefaultAsync(r => r.Id == id);
         }
         public async Task<bool> AnyAsync(int id)
         {
-            return await Db.AnyAsync(a => a.Id == id);
+            return await Db.AnyAsync(r => r.Id == id);
         }
     }
 }
