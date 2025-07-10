@@ -14,7 +14,7 @@ namespace Movies.Api
                      
             builder.Services.AddDbContext<MovieApiContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MovieApiContext") ?? 
-                throw new InvalidOperationException("Connection string 'MovieApiContext' not found.")));
+                    throw new InvalidOperationException("Connection string 'MovieApiContext' not found.")));
             
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MapperProfile>());
@@ -27,10 +27,7 @@ namespace Movies.Api
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(opt =>
-                {
-                    opt.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-                });
+                app.UseSwaggerUI(opt => opt.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
                 await app.SeedDataAsync();
             }
 
