@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Movies.Api.Extensions;
 using Movies.Core.DomainContracts;
 using Movies.Data.Data;
+using Movies.Data.Repositories;
 
 namespace Movies.Api
 {
@@ -18,7 +19,7 @@ namespace Movies.Api
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MapperProfile>());
             builder.Services.AddSwaggerGen(opt => opt.EnableAnnotations());
-            builder.Services.AddScoped<IUnitOfWork, IUnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 
