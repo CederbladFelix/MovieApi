@@ -2,10 +2,10 @@
 
 namespace Movies.Core.DomainContracts
 {
-    public interface IActorRepository
+    public interface IReviewRepository
     {
         Task<bool> AnyAsync(int id);
-        Task<Actor?> GetAsync(int id);
-        Task<IEnumerable<Actor>> GetAllAsync();
+        Task<IEnumerable<Review>> GetAllAsync();
+        Task<Review?> GetAsync(int id);
     }
 }

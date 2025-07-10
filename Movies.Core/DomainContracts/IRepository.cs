@@ -1,4 +1,4 @@
-﻿namespace Movies.Data.Repositories
+﻿namespace Movies.Core.DomainContracts
 {
     public interface IRepository<T> where T : class
     {

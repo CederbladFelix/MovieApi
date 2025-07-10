@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Movies.Core.DomainContracts;
 using Movies.Data.Data;
 
 namespace Movies.Data.Repositories
