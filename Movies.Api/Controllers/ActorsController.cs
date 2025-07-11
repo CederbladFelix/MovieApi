@@ -22,8 +22,8 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, [FromBody] MovieActorCreateWithActorIdDto dto)
         {
-            var actorExists = await _unitOfWork.Actors.AnyAsync(dto.ActorId);
-            var movieExists = await _unitOfWork.Movies.AnyAsync(movieId);
+            var actorExists = await _unitOfWork.Actors.AnyActorAsync(dto.ActorId);
+            var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
 
             if (!actorExists || !movieExists)
                 return NotFound();
@@ -51,8 +51,8 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, int actorId, [FromBody] MovieActorCreateDto dto)
         {
-            var actorExists = await _unitOfWork.Actors.AnyAsync(actorId);
-            var movieExists = await _unitOfWork.Movies.AnyAsync(movieId);
+            var actorExists = await _unitOfWork.Actors.AnyActorAsync(actorId);
+            var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
 
             if (!actorExists || !movieExists)
                 return NotFound();

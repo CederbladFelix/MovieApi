@@ -36,7 +36,7 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
-            var movies = await _unitOfWork.Movies.GetAllAsync();
+            var movies = await _unitOfWork.Movies.GetMoviesIncludingGenre();
             var moviesDto = _mapper.Map<IEnumerable<MovieDto>>(movies);
 
             return Ok(moviesDto);
@@ -47,7 +47,7 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {          
-            var movie = await _unitOfWork.Movies.GetAsync(id);
+            var movie = await _unitOfWork.Movies.GetMovieIncludingGenre(id);
             if (movie == null)
                 return NotFound();
 
@@ -78,7 +78,7 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> PutMovie(int id, MovieUpdateDto dto)
         {
-            var movie = await _unitOfWork.Movies.GetAsync(id);
+            var movie = await _unitOfWork.Movies.GetMovieIncludingGenre(id);
 
             if (movie == null)
                 return NotFound();
@@ -128,7 +128,7 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteMovie(int id)
         {
-            var movie = await _unitOfWork.Movies.GetAsync(id);
+            var movie = await _unitOfWork.Movies.GetMovieIncludingGenre(id);
 
             if (movie == null)
                 return NotFound();
@@ -141,7 +141,7 @@ namespace Movies.Api.Controllers
 
         private async Task<bool> MovieExists(int id)
         {
-            return await _unitOfWork.Movies.AnyAsync(id);
+            return await _unitOfWork.Movies.AnyMovieAsync(id);
         }
     }
 }

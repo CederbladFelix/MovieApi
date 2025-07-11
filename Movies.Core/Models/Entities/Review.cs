@@ -2,7 +2,7 @@
 
 namespace Movies.Core.Models.Entities
 {
-    public class Review
+    public class Review : Entity
     {
         public int Id { get; set; }
 

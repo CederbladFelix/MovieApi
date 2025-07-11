@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Movies.Core.DomainContracts;
+using Movies.Core.Models.Entities;
 using Movies.Data.Data;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Movies.Data.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : Entity
     {
         protected readonly MovieApiContext Context;
 
@@ -15,6 +18,10 @@ namespace Movies.Data.Repositories
             Context = movieApiContext;
             Db = movieApiContext.Set<T>();
         }
+
+        public IQueryable<T> FindAll() => Db;
+
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression) => Db.Where(expression);
 
         public void Add(T entity) => Db.Add(entity);
 

@@ -1,6 +1,6 @@
 ﻿namespace Movies.Core.Models.Entities
 {
-    public class MovieActor
+    public class MovieActor : Entity
     {
         public int MovieId { get; set; }
         public Movie Movie { get; set; } = null!;

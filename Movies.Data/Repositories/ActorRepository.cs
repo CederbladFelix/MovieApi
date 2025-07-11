@@ -10,16 +10,16 @@ namespace Movies.Data.Repositories
 
         public ActorRepository(MovieApiContext movieApiContext) : base(movieApiContext) { }
 
-        public async Task<IEnumerable<Actor>> GetAllAsync()
+        public async Task<IEnumerable<Actor>> GetAllActorsAsync()
         {
             return await Db.ToListAsync();
         }
 
-        public async Task<Actor?> GetAsync(int id)
+        public async Task<Actor?> GetActorAsync(int id)
         {
             return await Db.FirstOrDefaultAsync(a => a.Id == id);
         }
-        public async Task<bool> AnyAsync(int id)
+        public async Task<bool> AnyActorAsync(int id)
         {
             return await Db.AnyAsync(a => a.Id == id);
         }

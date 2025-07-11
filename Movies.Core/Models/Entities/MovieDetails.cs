@@ -2,7 +2,7 @@
 
 namespace Movies.Core.Models.Entities
 {
-    public class MovieDetails
+    public class MovieDetails : Entity
     {
         public int Id { get; set; }
 

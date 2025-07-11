@@ -21,12 +21,12 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReviewDto>))]
         public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviewsForMovie(int movieId)
         {
-            var movieExists = await _unitOfWork.Movies.AnyAsync(movieId);
+            var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
 
             if (!movieExists)
                 return NotFound();
 
-            var reviews = await _unitOfWork.Reviews.GetAllForMovieAsync(movieId);
+            var reviews = await _unitOfWork.Reviews.GetAllReviewsForMovieAsync(movieId);
 
             var reviewsDto = _mapper.Map<IEnumerable<ReviewDto>>(reviews);
 

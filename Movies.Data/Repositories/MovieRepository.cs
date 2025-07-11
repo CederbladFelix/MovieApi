@@ -11,12 +11,12 @@ namespace Movies.Data.Repositories
 
         public MovieRepository(MovieApiContext movieApiContext) : base(movieApiContext) { }
 
-        public async Task<IEnumerable<Movie>> GetAllAsync()
+        public async Task<IEnumerable<Movie>> GetMoviesIncludingGenre()
         {
             return await Db.Include(m => m.Genre).ToListAsync();
         }
 
-        public async Task<Movie?> GetAsync(int id)
+        public async Task<Movie?> GetMovieIncludingGenre(int id)
         {
             return await Db.Where(m => m.Id == id).Include(m => m.Genre).FirstOrDefaultAsync(); 
         }
@@ -67,7 +67,7 @@ namespace Movies.Data.Repositories
                 .FirstAsync(g => g.Name == genreName);
         }
 
-        public async Task<bool> AnyAsync(int id)
+        public async Task<bool> AnyMovieAsync(int id)
         {
             return await Db.AnyAsync(m => m.Id == id);
         }
