@@ -7,5 +7,6 @@ namespace Movies.Core.DomainContracts
         Task<bool> AnyAsync(int id);
         Task<IEnumerable<Review>> GetAllAsync();
         Task<Review?> GetAsync(int id);
+        Task<IEnumerable<Review>> GetAllForMovieAsync(int movieId);
     }
 }

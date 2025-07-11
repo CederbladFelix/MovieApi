@@ -15,6 +15,13 @@ namespace Movies.Data.Repositories
             return await Db.ToListAsync();
         }
 
+        public async Task<IEnumerable<Review>> GetAllForMovieAsync(int movieId)
+        {
+            return await Db
+                .Where(r => r.MovieId == movieId)
+                .ToListAsync();
+        }
+
         public async Task<Review?> GetAsync(int id)
         {
             return await Db.FirstOrDefaultAsync(r => r.Id == id);
