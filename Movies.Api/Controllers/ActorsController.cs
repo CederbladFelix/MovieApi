@@ -11,10 +11,9 @@ namespace Movies.Api.Controllers
     [Route("api/movies/{movieId}/actors")]
     [ApiController]
     [Produces("application/json")]
-    public class ActorsController(IUnitOfWork unitOfWork, /*MovieApiContext context,*/ IMapper mapper) : ControllerBase
+    public class ActorsController(IUnitOfWork unitOfWork, IMapper mapper) : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        //private readonly MovieApiContext _context = context;
         private readonly IMapper _mapper = mapper;
 
         [HttpPost]
@@ -31,16 +30,12 @@ namespace Movies.Api.Controllers
 
             var actorAlreadyInMovie = await _unitOfWork.Actors.InMovieAsync(dto.ActorId, movieId);
                 
-                /*await _context.MovieActors
-                .AnyAsync(ma => ma.ActorId == dto.ActorId && ma.MovieId == movieId);*/
-
             if (actorAlreadyInMovie)
                 return Conflict();
 
             var movieActor = _mapper.Map<MovieActor>(dto);
             movieActor.MovieId = movieId;
 
-            //_context.MovieActors.Add(movieActor);
             _unitOfWork.Actors.AddMovieActor(movieActor);
             await _unitOfWork.CompleteAsync();
 

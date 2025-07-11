@@ -14,14 +14,12 @@ namespace Movies.Api.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        //private readonly MovieApiContext _context;
         private readonly IMapper _mapper;
         private readonly MovieQueryOptions _includeAll;
 
-        public MoviesController(IUnitOfWork unitOfWork/*, MovieApiContext context*/, IMapper mapper)
+        public MoviesController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
-            //_context = context;
             _mapper = mapper;
 
             _includeAll = new MovieQueryOptions
@@ -38,9 +36,6 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
-            //var moviesDto = await _context.Movies
-            //    .ProjectTo<MovieDto>(_mapper.ConfigurationProvider)
-            //    .ToListAsync();
             var movies = await _unitOfWork.Movies.GetAllAsync();
             var moviesDto = _mapper.Map<IEnumerable<MovieDto>>(movies);
 
@@ -52,11 +47,6 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {          
-            //var movieDto = await _context.Movies
-            //    .Where(m => m.Id == id)
-            //    .ProjectTo<MovieDto>(_mapper.ConfigurationProvider)
-            //    .FirstOrDefaultAsync();
-
             var movie = await _unitOfWork.Movies.GetAsync(id);
             if (movie == null)
                 return NotFound();
@@ -71,11 +61,6 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDetailDto>> GetMovieDetails(int id)
         {
-            //var movieDto = await _context.Movies
-            //    .Where(m => m.Id == id)
-            //    .ProjectTo<MovieDetailDto>(_mapper.ConfigurationProvider)
-            //    .FirstOrDefaultAsync();
-
             var movie = await _unitOfWork.Movies.GetMovieWithQueryOptionsAsync(id, options: _includeAll);
 
             if (movie == null)
@@ -131,8 +116,6 @@ namespace Movies.Api.Controllers
 
             _unitOfWork.Movies.Add(movie);
             await _unitOfWork.CompleteAsync();
-            //_context.Movies.Add(movie);
-            //await _context.SaveChangesAsync();
 
             var movieDto = _mapper.Map<MovieDto>(movie);
 
