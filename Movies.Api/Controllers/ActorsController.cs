@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Movies.Core.DomainContracts;
+﻿using Microsoft.AspNetCore.Mvc;
 using Movies.Core.Models.DTOs;
-using Movies.Core.Models.Entities;
 using Movies.Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 

@@ -1,36 +1,28 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Movies.Core.DomainContracts;
+﻿using Microsoft.AspNetCore.Mvc;
 using Movies.Core.Models.DTOs;
-using Movies.Data.Data;
+using Movies.Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Movies.Api.Controllers
 {
     [ApiController]
     [Produces("application/json")]
-    public class ReviewsController(IUnitOfWork unitOfWork, IMapper mapper) : ControllerBase
+    public class ReviewsController(IServiceManager serviceManager) : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IMapper _mapper = mapper;
+        private readonly IServiceManager _serviceManager = serviceManager;
 
         [HttpGet("api/movies/{movieId}/reviews")]
         [SwaggerOperation(Summary = "Get reviews for a movie", Description = "Gets all reviews for a movie.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReviewDto>))]
         public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviewsForMovie(int movieId)
         {
-            var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
+            var reviewDtos = await _serviceManager.ReviewService.GetReviewsForMovieAsync(movieId);
 
-            if (!movieExists)
-                return NotFound();
+            if (reviewDtos == null)
+                return NotFound(); 
 
-            var reviews = await _unitOfWork.Reviews.GetReviewsForMovieAsync(movieId);
+            return Ok(reviewDtos);
 
-            var reviewsDto = _mapper.Map<IEnumerable<ReviewDto>>(reviews);
-
-            return Ok(reviewsDto);
         }
     }
 }
