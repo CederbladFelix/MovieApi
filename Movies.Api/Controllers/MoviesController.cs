@@ -15,7 +15,7 @@ namespace Movies.Api.Controllers
 
         public MoviesController(IServiceManager serviceManager)
         {
-            this._serviceManager = serviceManager;
+            _serviceManager = serviceManager;
 
             _includeAll = new MovieQueryOptions
             {

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Movies.Core.DomainContracts;
+using Movies.Core.Models.DTOs;
+using Movies.Core.Models.Entities;
 using Movies.Services.Contracts;
 
 namespace Movies.Services
@@ -13,6 +15,52 @@ namespace Movies.Services
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+        }
+
+        public async Task<MovieActorDto> AddActorToMovieAsync(int movieId, MovieActorCreateWithActorIdDto dto)
+        {
+            var actorExists = await _unitOfWork.Actors.AnyActorAsync(dto.ActorId);
+            var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
+
+            if (!actorExists || !movieExists)
+                return null!;
+
+            var actorAlreadyInMovie = await _unitOfWork.Actors.ActorInMovieAsync(dto.ActorId, movieId);
+
+            if (actorAlreadyInMovie)
+                return null!;
+
+            var movieActor = _mapper.Map<MovieActor>(dto);
+            movieActor.MovieId = movieId;
+
+            _unitOfWork.Actors.AddMovieActor(movieActor);
+            await _unitOfWork.CompleteAsync();
+
+            return _mapper.Map<MovieActorDto>(movieActor);
+
+        }
+
+        public async Task<MovieActorDto> AddActorToMovieAsync(int movieId, int actorId, MovieActorCreateDto dto)
+        {
+            var actorExists = await _unitOfWork.Actors.AnyActorAsync(actorId);
+            var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
+
+            if (!actorExists || !movieExists)
+                return null!;
+
+            var actorAlreadyInMovie = await _unitOfWork.Actors.ActorInMovieAsync(actorId, movieId);
+
+            if (actorAlreadyInMovie)
+                return null!;
+
+            var movieActor = _mapper.Map<MovieActor>(dto);
+            movieActor.MovieId = movieId;
+            movieActor.ActorId = actorId;
+
+            _unitOfWork.Actors.AddMovieActor(movieActor);
+            await _unitOfWork.CompleteAsync();
+
+            return _mapper.Map<MovieActorDto>(movieActor);
         }
 
     }

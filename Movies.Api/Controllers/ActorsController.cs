@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Movies.Core.DomainContracts;
 using Movies.Core.Models.DTOs;
 using Movies.Core.Models.Entities;
+using Movies.Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 
 
@@ -11,10 +12,10 @@ namespace Movies.Api.Controllers
     [Route("api/movies/{movieId}/actors")]
     [ApiController]
     [Produces("application/json")]
-    public class ActorsController(IUnitOfWork unitOfWork, IMapper mapper) : ControllerBase
+    public class ActorsController(IServiceManager _serviceManager) : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IMapper _mapper = mapper;
+        private readonly IServiceManager _serviceManager = _serviceManager;
+
 
         [HttpPost]
         [SwaggerOperation(Summary = "Connect actor to movie", Description = "Connect actor to a movie.", Tags = ["Movie", "Actor"])]
@@ -22,26 +23,14 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, [FromBody] MovieActorCreateWithActorIdDto dto)
         {
-            var actorExists = await _unitOfWork.Actors.AnyActorAsync(dto.ActorId);
-            var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
+            var movieActorDto = await _serviceManager.ActorService.AddActorToMovieAsync(movieId, dto);
 
-            if (!actorExists || !movieExists)
-                return NotFound();
-
-            var actorAlreadyInMovie = await _unitOfWork.Actors.ActorInMovieAsync(dto.ActorId, movieId);
-                
-            if (actorAlreadyInMovie)
-                return Conflict();
-
-            var movieActor = _mapper.Map<MovieActor>(dto);
-            movieActor.MovieId = movieId;
-
-            _unitOfWork.Actors.AddMovieActor(movieActor);
-            await _unitOfWork.CompleteAsync();
+            if (movieActorDto == null)
+                return BadRequest();
 
             return Created(
                 $"/api/movies/{movieId}/actors/{dto.ActorId}",
-                _mapper.Map<MovieActorDto>(movieActor)
+                movieActorDto
             );
         }
 
@@ -51,27 +40,14 @@ namespace Movies.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MovieActorDto>> AddActorToMovie(int movieId, int actorId, [FromBody] MovieActorCreateDto dto)
         {
-            var actorExists = await _unitOfWork.Actors.AnyActorAsync(actorId);
-            var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
+            var movieActorDto = await _serviceManager.ActorService.AddActorToMovieAsync(movieId, actorId, dto);
 
-            if (!actorExists || !movieExists)
-                return NotFound();
-
-            var actorAlreadyInMovie = await _unitOfWork.Actors.ActorInMovieAsync(actorId, movieId);
-
-            if (actorAlreadyInMovie)
-                return Conflict();
-
-            var movieActor = _mapper.Map<MovieActor>(dto);
-            movieActor.MovieId = movieId;
-            movieActor.ActorId = actorId;
-
-            _unitOfWork.Actors.AddMovieActor(movieActor);
-            await _unitOfWork.CompleteAsync();
+            if (movieActorDto == null)
+                return BadRequest();
 
             return Created(
                 $"/api/movies/{movieId}/actors/{actorId}",
-                _mapper.Map<MovieActorDto>(movieActor)
+                movieActorDto
             );
         }
     }
