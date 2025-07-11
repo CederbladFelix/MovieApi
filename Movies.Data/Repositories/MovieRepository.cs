@@ -10,20 +10,22 @@ namespace Movies.Data.Repositories
     {
 
         public MovieRepository(MovieApiContext movieApiContext) : base(movieApiContext) { }
-
-        public async Task<IEnumerable<Movie>> GetMoviesIncludingGenre()
+        
+        public async Task<IEnumerable<Movie>> GetMoviesAsync(bool includeGenre = false)
         {
-            return await Db.Include(m => m.Genre).ToListAsync();
+            return includeGenre ? await FindAll().Include(m => m.Genre).ToListAsync() : 
+                                  await FindAll().ToListAsync();
         }
 
-        public async Task<Movie?> GetMovieIncludingGenre(int id)
+        public async Task<Movie?> GetMovieAsync(int id, bool includeGenre = false)
         {
-            return await Db.Where(m => m.Id == id).Include(m => m.Genre).FirstOrDefaultAsync(); 
+            return includeGenre ? await FindByCondition(m => m.Id == id).Include(m => m.Genre).FirstOrDefaultAsync() :
+                                  await FindByCondition(m => m.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Movie>> GetMoviesWithQueryOptionsAsync(MovieQueryOptions options)
         {
-            IQueryable<Movie> query = Db;
+            IQueryable<Movie> query = FindAll();
 
             if (options.IncludeGenre)
                 query = query.Include(m => m.Genre);
@@ -43,7 +45,7 @@ namespace Movies.Data.Repositories
 
         public async Task<Movie?> GetMovieWithQueryOptionsAsync(int id, MovieQueryOptions options)
         {
-            IQueryable<Movie> query = Db.Where(m => m.Id == id);
+            IQueryable<Movie> query = FindByCondition(m => m.Id == id);
 
             if (options.IncludeGenre)
                 query = query.Include(m => m.Genre);
@@ -61,15 +63,14 @@ namespace Movies.Data.Repositories
             return await query.FirstOrDefaultAsync();
         }
 
+        public async Task<bool> AnyMovieAsync(int id)
+        {
+            return await FindAll().AnyAsync(m => m.Id == id);
+        }
         public async Task<Genre> GetGenreByNameAsync(string genreName)
         {
             return await Context.Set<Genre>()
                 .FirstAsync(g => g.Name == genreName);
-        }
-
-        public async Task<bool> AnyMovieAsync(int id)
-        {
-            return await Db.AnyAsync(m => m.Id == id);
         }
     }
 }

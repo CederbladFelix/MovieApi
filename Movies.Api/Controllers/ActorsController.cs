@@ -28,7 +28,7 @@ namespace Movies.Api.Controllers
             if (!actorExists || !movieExists)
                 return NotFound();
 
-            var actorAlreadyInMovie = await _unitOfWork.Actors.InMovieAsync(dto.ActorId, movieId);
+            var actorAlreadyInMovie = await _unitOfWork.Actors.ActorInMovieAsync(dto.ActorId, movieId);
                 
             if (actorAlreadyInMovie)
                 return Conflict();
@@ -57,7 +57,7 @@ namespace Movies.Api.Controllers
             if (!actorExists || !movieExists)
                 return NotFound();
 
-            var actorAlreadyInMovie = await _unitOfWork.Actors.InMovieAsync(actorId, movieId);
+            var actorAlreadyInMovie = await _unitOfWork.Actors.ActorInMovieAsync(actorId, movieId);
 
             if (actorAlreadyInMovie)
                 return Conflict();

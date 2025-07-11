@@ -17,6 +17,8 @@ namespace Movies.Api
                     throw new InvalidOperationException("Connection string 'MovieApiContext' not found.")));
             
             builder.Services.AddControllers();
+            builder.Services.AddRepositories();
+            builder.Services.AddServiceLayer();
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MapperProfile>());
             builder.Services.AddSwaggerGen(opt => opt.EnableAnnotations());
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

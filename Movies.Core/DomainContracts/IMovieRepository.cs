@@ -5,12 +5,12 @@ namespace Movies.Core.DomainContracts
 {
     public interface IMovieRepository
     {
-        Task<Movie?> GetMovieIncludingGenre(int id);
-        Task<IEnumerable<Movie>> GetMoviesIncludingGenre();
-        Task<Movie?> GetMovieWithQueryOptionsAsync(int id, MovieQueryOptions options);
+        Task<IEnumerable<Movie>> GetMoviesAsync(bool includeGenre = false);
+        Task<Movie?> GetMovieAsync(int id, bool includeGenre = false);
         Task<IEnumerable<Movie>> GetMoviesWithQueryOptionsAsync(MovieQueryOptions options);
-        Task<Genre> GetGenreByNameAsync(string genreName);
+        Task<Movie?> GetMovieWithQueryOptionsAsync(int id, MovieQueryOptions options);
         Task<bool> AnyMovieAsync(int id);
+        Task<Genre> GetGenreByNameAsync(string genreName);
         void Add(Movie movie);
         void Delete(Movie movie);
         void Update(Movie movie);

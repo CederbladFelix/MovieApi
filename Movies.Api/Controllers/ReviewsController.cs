@@ -26,7 +26,7 @@ namespace Movies.Api.Controllers
             if (!movieExists)
                 return NotFound();
 
-            var reviews = await _unitOfWork.Reviews.GetAllReviewsForMovieAsync(movieId);
+            var reviews = await _unitOfWork.Reviews.GetReviewsForMovieAsync(movieId);
 
             var reviewsDto = _mapper.Map<IEnumerable<ReviewDto>>(reviews);
 

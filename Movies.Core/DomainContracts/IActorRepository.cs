@@ -6,8 +6,8 @@ namespace Movies.Core.DomainContracts
     {
         Task<bool> AnyActorAsync(int id);
         Task<Actor?> GetActorAsync(int id);
-        Task<IEnumerable<Actor>> GetAllActorsAsync();
-        Task<bool> InMovieAsync(int id, int movieId);
+        Task<IEnumerable<Actor>> GetActorsAsync();
+        Task<bool> ActorInMovieAsync(int id, int movieId);
         void AddMovieActor(MovieActor movieActor);
     }
 }

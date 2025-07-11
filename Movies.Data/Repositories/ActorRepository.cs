@@ -10,25 +10,22 @@ namespace Movies.Data.Repositories
 
         public ActorRepository(MovieApiContext movieApiContext) : base(movieApiContext) { }
 
-        public async Task<IEnumerable<Actor>> GetAllActorsAsync()
+        public async Task<IEnumerable<Actor>> GetActorsAsync()
         {
-            return await Db.ToListAsync();
+            return await FindAll().ToListAsync();
         }
 
         public async Task<Actor?> GetActorAsync(int id)
         {
-            return await Db.FirstOrDefaultAsync(a => a.Id == id);
+            return await FindAll().FirstOrDefaultAsync(a => a.Id == id);
         }
         public async Task<bool> AnyActorAsync(int id)
         {
-            return await Db.AnyAsync(a => a.Id == id);
+            return await FindAll().AnyAsync(a => a.Id == id);
         }
-        public async Task<bool> InMovieAsync(int id, int movieId)
+        public async Task<bool> ActorInMovieAsync(int id, int movieId)
         {
-            return await Db
-                .Include(a => a.MovieActors)
-                .Where(a => a.MovieActors.Any(ma => ma.ActorId == id && ma.MovieId == movieId))          
-                .AnyAsync();
+            return await FindByCondition(a => a.MovieActors.Any(ma => ma.ActorId == id && ma.MovieId == movieId)).AnyAsync();
         }
 
         public void AddMovieActor(MovieActor movieActor)
