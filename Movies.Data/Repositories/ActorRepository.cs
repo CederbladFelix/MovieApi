@@ -23,5 +23,19 @@ namespace Movies.Data.Repositories
         {
             return await Db.AnyAsync(a => a.Id == id);
         }
+        public async Task<bool> InMovieAsync(int id, int movieId)
+        {
+            return await Db
+                .Include(a => a.MovieActors)
+                .Where(a => a.MovieActors.Any(ma => ma.ActorId == id && ma.MovieId == movieId))          
+                .AnyAsync();
+        }
+
+        public void AddMovieActor(MovieActor movieActor)
+        {
+            Context.Set<MovieActor>().Add(movieActor);              
+        }
+
+
     }
 }
