@@ -31,27 +31,7 @@ namespace Movies.Api
             var app = builder.Build();
 
 
-            app.UseExceptionHandler(builder =>
-            {
-                builder.Run(async context =>
-                {
-                    var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
-                    if (contextFeature != null)
-                    {
-                        var problemDetails = new ProblemDetails
-                        {
-                            Status = context.Response.StatusCode,
-                            Title = "Internal server error",
-                            Detail = contextFeature.Error.Message,
-                            Instance = context.Request.Path,
-                            Type = "https://httpstatuses.com/500"
-                        };
-
-                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                        await context.Response.WriteAsJsonAsync(problemDetails);
-                    }
-                });
-            });
+            app.ConfigureExceptionHandler();
 
 
             if (app.Environment.IsDevelopment())
