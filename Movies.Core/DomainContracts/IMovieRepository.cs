@@ -3,7 +3,7 @@ using Movies.Core.Models.Entities;
 
 namespace Movies.Core.DomainContracts
 {
-    public interface IMovieRepository : IRepository<Movie>, IInternalRepository<Movie>
+    public interface IMovieRepository : IRepository<Movie>
     {
         Task<IEnumerable<Movie>> GetMoviesAsync(bool includeGenre = false);
         Task<Movie?> GetMovieAsync(int id, bool includeGenre = false);

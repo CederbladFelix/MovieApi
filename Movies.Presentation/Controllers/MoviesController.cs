@@ -31,9 +31,9 @@ namespace Movies.Presentation.Controllers
         [HttpGet]
         [SwaggerOperation(Summary = "Get all movies", Description = "Gets all movies.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
-        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies(/*[FromQuery] int PageSize, [FromQuery] int PageNumber*/)
+        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies(/*[FromQuery] int pageSize, [FromQuery] int pageNumber*/)
         {
-            return Ok(await _serviceManager.MovieService.GetMoviesAsync(includeGenre: true));
+            return Ok(await _serviceManager.MovieService.GetMoviesAsync(includeGenre: true/*, new PaginationOptions { PageSize = pageSize, PageNumber = pageNumber }*/));
         }
 
         [HttpGet("{id}")]
@@ -42,10 +42,6 @@ namespace Movies.Presentation.Controllers
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {
             var movieDto = await _serviceManager.MovieService.GetMovieAsync(id, includeGenre: true);
-
-            if (movieDto == null)
-                return NotFound();
-
             return Ok(movieDto);
         }
 
