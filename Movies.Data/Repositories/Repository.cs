@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Movies.Data.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : Entity
+    public abstract class Repository<T> : IRepository<T>, IInternalRepository<T> where T : Entity
     {
         protected readonly MovieApiContext Context;
 

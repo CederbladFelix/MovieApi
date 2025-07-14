@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Movies.Core.DomainContracts;
 using Movies.Core.Models.DTOs;
-using Movies.Services.Contracts.Contracts;
+using Movies.Services.Contracts;
 
 namespace Movies.Services
 {

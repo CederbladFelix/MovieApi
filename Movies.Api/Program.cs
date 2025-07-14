@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Movies.Api.Extensions;
 using Movies.Core.DomainContracts;
@@ -27,6 +29,29 @@ namespace Movies.Api
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
+
+
+            app.UseExceptionHandler(builder =>
+            {
+                builder.Run(async context =>
+                {
+                    var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+                    if (contextFeature != null)
+                    {
+                        var problemDetails = new ProblemDetails
+                        {
+                            Status = context.Response.StatusCode,
+                            Title = "Internal server error",
+                            Detail = contextFeature.Error.Message,
+                            Instance = context.Request.Path,
+                            Type = "https://httpstatuses.com/500"
+                        };
+
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        await context.Response.WriteAsJsonAsync(problemDetails);
+                    }
+                });
+            });
 
 
             if (app.Environment.IsDevelopment())

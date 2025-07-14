@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Core.Models.DTOs;
-using Movies.Services.Contracts.Contracts;
+using Movies.Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Movies.Presentation.Controllers
@@ -31,7 +31,7 @@ namespace Movies.Presentation.Controllers
         [HttpGet]
         [SwaggerOperation(Summary = "Get all movies", Description = "Gets all movies.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
-        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
+        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies(/*[FromQuery] int PageSize, [FromQuery] int PageNumber*/)
         {
             return Ok(await _serviceManager.MovieService.GetMoviesAsync(includeGenre: true));
         }

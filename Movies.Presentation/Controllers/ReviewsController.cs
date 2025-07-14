@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Core.Models.DTOs;
-using Movies.Services.Contracts.Contracts;
+using Movies.Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Movies.Presentation.Controllers

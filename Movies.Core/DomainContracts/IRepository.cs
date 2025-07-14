@@ -8,9 +8,5 @@ namespace Movies.Core.DomainContracts
         void Add(T entity);
         void Delete(T entity);
         void Update(T entity);
-
-        IQueryable<T> FindAll();
-
-        IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression);
     }
 }

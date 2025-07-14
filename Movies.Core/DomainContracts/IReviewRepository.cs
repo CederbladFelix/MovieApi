@@ -2,7 +2,7 @@
 
 namespace Movies.Core.DomainContracts
 {
-    public interface IReviewRepository
+    public interface IReviewRepository : IRepository<Review>, IInternalRepository<Review>
     {
         Task<IEnumerable<Review>> GetReviewsAsync();
         Task<Review?> GetReviewAsync(int id);
