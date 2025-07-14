@@ -11,10 +11,20 @@ namespace Movies.Data.Repositories
 
         public MovieRepository(MovieApiContext movieApiContext) : base(movieApiContext) { }
         
-        public async Task<IEnumerable<Movie>> GetMoviesAsync(bool includeGenre = false)
+        public async Task<IEnumerable<Movie>> GetMoviesAsync(PaginationOptionsDto paginationOptions, bool includeGenre = false)
         {
-            return includeGenre ? await FindAll().Include(m => m.Genre).ToListAsync() : 
-                                  await FindAll().ToListAsync();
+            return includeGenre ? await FindAll()
+                                            .Include(m => m.Genre)
+                                            .OrderBy(m => m.Id)
+                                            .Skip((paginationOptions.Page - 1) * paginationOptions.PageSize)
+                                            .Take(paginationOptions.PageSize)
+                                            .ToListAsync() : 
+
+                                  await FindAll()
+                                            .OrderBy(p => p.Id)
+                                            .Skip((paginationOptions.Page - 1) * paginationOptions.PageSize)
+                                            .Take(paginationOptions.PageSize)
+                                            .ToListAsync();
         }
 
         public async Task<Movie?> GetMovieAsync(int id, bool includeGenre = false)
@@ -23,7 +33,7 @@ namespace Movies.Data.Repositories
                                   await FindByCondition(m => m.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetMoviesWithQueryOptionsAsync(MovieQueryOptions options)
+        public async Task<IEnumerable<Movie>> GetMoviesWithQueryOptionsAsync(MovieQueryOptionsDto options)
         {
             IQueryable<Movie> query = FindAll();
 
@@ -43,7 +53,7 @@ namespace Movies.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Movie?> GetMovieWithQueryOptionsAsync(int id, MovieQueryOptions options)
+        public async Task<Movie?> GetMovieWithQueryOptionsAsync(int id, MovieQueryOptionsDto options)
         {
             IQueryable<Movie> query = FindByCondition(m => m.Id == id);
 

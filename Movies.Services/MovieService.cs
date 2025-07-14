@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Movies.Core.DomainContracts;
+using Movies.Core.Exceptions;
 using Movies.Core.Models.DTOs;
 using Movies.Core.Models.Entities;
 using Movies.Services.Contracts;
@@ -18,9 +19,9 @@ namespace Movies.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<MovieDto>> GetMoviesAsync(bool includeGenre = false)
+        public async Task<IEnumerable<MovieDto>> GetMoviesAsync(PaginationOptionsDto paginationOptions, bool includeGenre = false)
         {
-            var movies = await _unitOfWork.Movies.GetMoviesAsync(includeGenre);
+            var movies = await _unitOfWork.Movies.GetMoviesAsync(paginationOptions, includeGenre);
             var moviesDto = _mapper.Map<IEnumerable<MovieDto>>(movies);
 
             return moviesDto;
@@ -30,31 +31,31 @@ namespace Movies.Services
         {
             var movie = await _unitOfWork.Movies.GetMovieAsync(id, includeGenre: true);
             if (movie == null)
-                return null!;
+                throw new MovieNotFoundException(id);
 
             var movieDto = _mapper.Map<MovieDto>(movie);
 
             return movieDto;
         }
 
-        public async Task<MovieDetailDto> GetMovieDetailsAsync(int id, MovieQueryOptions options)
+        public async Task<MovieDetailDto> GetMovieDetailsAsync(int id, MovieQueryOptionsDto options)
         {
             var movie = await _unitOfWork.Movies.GetMovieWithQueryOptionsAsync(id, options);
 
             if (movie == null)
-                return null!;
+                throw new MovieNotFoundException(id);
 
             var movieDto = _mapper.Map<MovieDetailDto>(movie);
 
             return movieDto;
         }
 
-        public async Task<bool> PutMovieAsync(int id, MovieUpdateDto dto)
+        public async Task PutMovieAsync(int id, MovieUpdateDto dto)
         {
             var movie = await _unitOfWork.Movies.GetMovieAsync(id, includeGenre: true);
 
             if (movie == null)
-                return false;
+                throw new MovieNotFoundException(id);
 
             var genre = await _unitOfWork.Movies.GetGenreByNameAsync(dto.Genre);
 
@@ -68,12 +69,10 @@ namespace Movies.Services
             catch (DbUpdateConcurrencyException)
             {
                 if (!await _unitOfWork.Movies.AnyMovieAsync(id))
-                    return false;
+                    throw new MovieNotFoundException(id);
                 else
                     throw;
             }
-
-            return true;
         }
 
         public async Task<MovieDto> PostMovieAsync(MovieCreateDto dto)
@@ -91,17 +90,15 @@ namespace Movies.Services
             return movieDto;
         }
 
-        public async Task<bool> DeleteMovieAsync(int id)
+        public async Task DeleteMovieAsync(int id)
         {
             var movie = await _unitOfWork.Movies.GetMovieAsync(id, includeGenre: true);
 
             if (movie == null)
-                return false;
+                throw new MovieNotFoundException(id);
 
             _unitOfWork.Movies.Delete(movie);
             await _unitOfWork.CompleteAsync();
-
-            return true;
         }
     }
 }

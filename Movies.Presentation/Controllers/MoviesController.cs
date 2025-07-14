@@ -12,13 +12,13 @@ namespace Movies.Presentation.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IServiceManager _serviceManager;
-        private readonly MovieQueryOptions _includeAll;
+        private readonly MovieQueryOptionsDto _includeAll;
 
         public MoviesController(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
 
-            _includeAll = new MovieQueryOptions
+            _includeAll = new MovieQueryOptionsDto
             {
                 IncludeActors = true,
                 IncludeDetails = true,
@@ -31,9 +31,9 @@ namespace Movies.Presentation.Controllers
         [HttpGet]
         [SwaggerOperation(Summary = "Get all movies", Description = "Gets all movies.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
-        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies(/*[FromQuery] int pageSize, [FromQuery] int pageNumber*/)
+        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies([FromQuery] int pageSize, [FromQuery] PaginationOptionsDto paginationOptions)
         {
-            return Ok(await _serviceManager.MovieService.GetMoviesAsync(includeGenre: true/*, new PaginationOptions { PageSize = pageSize, PageNumber = pageNumber }*/));
+            return Ok(await _serviceManager.MovieService.GetMoviesAsync(paginationOptions, includeGenre: true));
         }
 
         [HttpGet("{id}")]
@@ -41,8 +41,7 @@ namespace Movies.Presentation.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {
-            var movieDto = await _serviceManager.MovieService.GetMovieAsync(id, includeGenre: true);
-            return Ok(movieDto);
+            return Ok(await _serviceManager.MovieService.GetMovieAsync(id, includeGenre: true));
         }
 
         [HttpGet("{id}/details")]
@@ -50,12 +49,7 @@ namespace Movies.Presentation.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieDetailDto))]
         public async Task<ActionResult<MovieDetailDto>> GetMovieDetails(int id)
         {
-            var movieDto = await _serviceManager.MovieService.GetMovieDetailsAsync(id, options: _includeAll);
-
-            if (movieDto == null)
-                return NotFound();
-
-            return Ok(movieDto);
+            return Ok(await _serviceManager.MovieService.GetMovieDetailsAsync(id, options: _includeAll));
         }
 
         [HttpPut("{id}")]
@@ -65,11 +59,7 @@ namespace Movies.Presentation.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> PutMovie(int id, MovieUpdateDto dto)
         {
-            var success = await _serviceManager.MovieService.PutMovieAsync(id, dto);
-
-            if (!success)
-                return NotFound();
-
+            await _serviceManager.MovieService.PutMovieAsync(id, dto);
             return NoContent();       
         }
 
@@ -89,11 +79,7 @@ namespace Movies.Presentation.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteMovie(int id)
         {
-            var success = await _serviceManager.MovieService.DeleteMovieAsync(id);
-
-            if (!success)
-                return NotFound();
-
+            await _serviceManager.MovieService.DeleteMovieAsync(id);
             return NoContent();
         }
 

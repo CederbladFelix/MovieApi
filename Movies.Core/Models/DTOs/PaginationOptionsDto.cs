@@ -1,11 +1,17 @@
 ﻿namespace Movies.Core.Models.DTOs
 {
-    public class PaginationOptions
+    public class PaginationOptionsDto
     {
         private const int MaxPageSize = 100;
-        private int pageSize = 10;
 
-        public int PageNumber { get; set; } = 1;
+        private int pageSize = 10;
+        private int pageNumber = 1;
+
+        public int Page
+        {
+            get => pageNumber;
+            set => pageNumber = (value < 1) ? 1 : value;
+        }
 
         public int PageSize
         {

@@ -9,46 +9,48 @@ namespace Movies.Api.Extensions
     {
         public static void ConfigureExceptionHandler(this WebApplication app)
         {
-            app.Run(async context =>
-            {
-                var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
-                if (contextFeature != null)
+            app.UseExceptionHandler(builder =>
+                builder.Run(async context =>
                 {
-                    var problemDetailsFactory = app.Services.GetRequiredService<ProblemDetailsFactory>();
-
-                    int statusCode;
-                    ProblemDetails problemDetails;
-
-                    switch (contextFeature.Error)
+                    var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+                    if (contextFeature != null)
                     {
-                        case MovieNotFoundException movieNotFoundException:
-                            statusCode = StatusCodes.Status404NotFound;
-                            problemDetails = problemDetailsFactory.CreateProblemDetails
-                            (
-                                context,
-                                statusCode,
-                                title: movieNotFoundException.Title,
-                                detail: movieNotFoundException.Message,
-                                instance: context.Request.Path
-                            );
-                            break;
-                        default:
-                            statusCode = StatusCodes.Status500InternalServerError;
-                            problemDetails = problemDetailsFactory.CreateProblemDetails
-                            (
-                                context,
-                                statusCode,
-                                title: "Internal server error",
-                                detail: contextFeature.Error.Message,
-                                instance: context.Request.Path
-                            );
-                            break;
-                    }
+                        var problemDetailsFactory = app.Services.GetRequiredService<ProblemDetailsFactory>();
 
-                    context.Response.StatusCode = statusCode;
-                    await context.Response.WriteAsJsonAsync(problemDetails);
-                }
-            });
+                        int statusCode;
+                        ProblemDetails problemDetails;
+
+                        switch (contextFeature.Error)
+                        {
+                            case MovieNotFoundException movieNotFoundException:
+                                statusCode = StatusCodes.Status404NotFound;
+                                problemDetails = problemDetailsFactory.CreateProblemDetails
+                                (
+                                    context,
+                                    statusCode,
+                                    title: movieNotFoundException.Title,
+                                    detail: movieNotFoundException.Message,
+                                    instance: context.Request.Path
+                                );
+                                break;
+                            default:
+                                statusCode = StatusCodes.Status500InternalServerError;
+                                problemDetails = problemDetailsFactory.CreateProblemDetails
+                                (
+                                    context,
+                                    statusCode,
+                                    title: "Internal server error",
+                                    detail: contextFeature.Error.Message,
+                                    instance: context.Request.Path
+                                );
+                                break;
+                        }
+
+                        context.Response.StatusCode = statusCode;
+                        await context.Response.WriteAsJsonAsync(problemDetails);
+                    }
+                })
+            );
         }
     }
 }

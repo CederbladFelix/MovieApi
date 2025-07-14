@@ -17,10 +17,10 @@ namespace Movies.Data.Data
             var genres = GenerateGenres();
             await context.AddRangeAsync(genres);
 
-            var actors = GenerateActors(10);
+            var actors = GenerateActors(100);
             await context.AddRangeAsync(actors);
 
-            var movies = GenerateMovies(10, actors, genres);
+            var movies = GenerateMovies(100, actors, genres);
             await context.AddRangeAsync(movies);
 
             await context.SaveChangesAsync();

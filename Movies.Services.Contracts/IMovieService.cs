@@ -5,11 +5,11 @@ namespace Movies.Services.Contracts
 {
     public interface IMovieService
     {
-        Task<IEnumerable<MovieDto>> GetMoviesAsync(bool includeGenre);
+        Task<IEnumerable<MovieDto>> GetMoviesAsync(PaginationOptionsDto paginationOptions, bool includeGenre = false);
         Task<MovieDto> GetMovieAsync(int id, bool includeGenre = false);
-        Task<MovieDetailDto> GetMovieDetailsAsync(int id, MovieQueryOptions options);
-        Task<bool> PutMovieAsync(int id, MovieUpdateDto dto);
+        Task<MovieDetailDto> GetMovieDetailsAsync(int id, MovieQueryOptionsDto options);
+        Task PutMovieAsync(int id, MovieUpdateDto dto);
         Task<MovieDto> PostMovieAsync(MovieCreateDto dto);
-        Task<bool> DeleteMovieAsync(int id);
+        Task DeleteMovieAsync(int id);
     }
 }

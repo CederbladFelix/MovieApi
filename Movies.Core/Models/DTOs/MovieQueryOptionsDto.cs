@@ -1,6 +1,6 @@
 ﻿namespace Movies.Core.Models.DTOs
 {
-    public class MovieQueryOptions
+    public class MovieQueryOptionsDto
     {
         public bool IncludeGenre { get; set; } = false;
         public bool IncludeDetails { get; set; } = false;
