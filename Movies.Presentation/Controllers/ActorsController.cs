@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Movies.Core.Models.DTOs;
-using Movies.Services.Contracts;
+using Movies.Services.Contracts.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 
 
-namespace Movies.Api.Controllers
+namespace Movies.Presentation.Controllers
 {
     [Route("api/movies/{movieId}/actors")]
     [ApiController]

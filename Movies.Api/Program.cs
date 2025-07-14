@@ -3,6 +3,7 @@ using Movies.Api.Extensions;
 using Movies.Core.DomainContracts;
 using Movies.Data.Data;
 using Movies.Data.Repositories;
+using System.Reflection.Metadata;
 
 namespace Movies.Api
 {
@@ -16,7 +17,9 @@ namespace Movies.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MovieApiContext") ?? 
                     throw new InvalidOperationException("Connection string 'MovieApiContext' not found.")));
             
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                            .AddApplicationPart(typeof(AssemblyReference).Assembly);
+
             builder.Services.AddRepositories();
             builder.Services.AddServiceLayer();
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MapperProfile>());

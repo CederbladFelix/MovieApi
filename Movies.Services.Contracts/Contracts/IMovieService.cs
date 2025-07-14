@@ -1,7 +1,7 @@
 ﻿using Movies.Core.Models.DTOs;
 using System.Threading.Tasks;
 
-namespace Movies.Services.Contracts
+namespace Movies.Services.Contracts.Contracts
 {
     public interface IMovieService
     {

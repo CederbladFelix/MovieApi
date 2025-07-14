@@ -1,6 +1,6 @@
 ﻿using Movies.Core.Models.DTOs;
 
-namespace Movies.Services.Contracts
+namespace Movies.Services.Contracts.Contracts
 {
     public interface IReviewService
     {

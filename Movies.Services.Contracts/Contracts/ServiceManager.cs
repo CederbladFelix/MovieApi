@@ -1,4 +1,4 @@
-﻿namespace Movies.Services.Contracts
+﻿namespace Movies.Services.Contracts.Contracts
 {
     public class ServiceManager : IServiceManager
     {

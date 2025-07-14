@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Movies.Core.DomainContracts;
 using Movies.Core.Models.DTOs;
 using Movies.Core.Models.Entities;
-using Movies.Services.Contracts;
+using Movies.Services.Contracts.Contracts;
 
 namespace Movies.Services
 {

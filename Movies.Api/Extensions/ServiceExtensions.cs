@@ -1,7 +1,7 @@
 ﻿using Movies.Core.DomainContracts;
 using Movies.Data.Repositories;
 using Movies.Services;
-using Movies.Services.Contracts;
+using Movies.Services.Contracts.Contracts;
 
 namespace Movies.Api.Extensions
 {
