@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Movies.Core.DomainContracts;
+using Movies.Core.Models.DTOs;
 using Movies.Core.Models.Entities;
 using Movies.Data.Data;
 
@@ -20,9 +21,13 @@ namespace Movies.Data.Repositories
             return await FindAll().FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsForMovieAsync(int movieId)
+        public async Task<IEnumerable<Review>> GetReviewsForMovieAsync(int movieId, PaginationOptionsDto paginationOptions)
         {
-            return await FindByCondition(r => r.MovieId == movieId).ToListAsync();
+            return await FindByCondition(r => r.MovieId == movieId)
+                            .OrderBy(r => r.Id)
+                            .Skip((paginationOptions.Page - 1) * paginationOptions.PageSize)
+                            .Take(paginationOptions.PageSize)
+                            .ToListAsync();
         }
 
         public async Task<bool> AnyReviewAsync(int id)

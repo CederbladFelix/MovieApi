@@ -4,6 +4,6 @@ namespace Movies.Services.Contracts
 {
     public interface IReviewService
     {
-        Task<IEnumerable<ReviewDto>> GetReviewsForMovieAsync(int movieId);
+        Task<IEnumerable<ReviewDto>> GetReviewsForMovieAsync(int movieId, PaginationOptionsDto paginationOptions);
     }
 }

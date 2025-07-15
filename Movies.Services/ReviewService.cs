@@ -16,14 +16,14 @@ namespace Movies.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ReviewDto>> GetReviewsForMovieAsync(int movieId)
+        public async Task<IEnumerable<ReviewDto>> GetReviewsForMovieAsync(int movieId, PaginationOptionsDto paginationOptions)
         {
             var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
 
             if (!movieExists)
                 return null!;
 
-            var reviews = await _unitOfWork.Reviews.GetReviewsForMovieAsync(movieId);
+            var reviews = await _unitOfWork.Reviews.GetReviewsForMovieAsync(movieId, paginationOptions);
 
             var reviewsDto = _mapper.Map<IEnumerable<ReviewDto>>(reviews);
 

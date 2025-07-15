@@ -1,4 +1,5 @@
-﻿using Movies.Core.Models.Entities;
+﻿using Movies.Core.Models.DTOs;
+using Movies.Core.Models.Entities;
 
 namespace Movies.Core.DomainContracts
 {
@@ -6,7 +7,7 @@ namespace Movies.Core.DomainContracts
     {
         Task<IEnumerable<Review>> GetReviewsAsync();
         Task<Review?> GetReviewAsync(int id);
-        Task<IEnumerable<Review>> GetReviewsForMovieAsync(int movieId);
+        Task<IEnumerable<Review>> GetReviewsForMovieAsync(int movieId, PaginationOptionsDto paginationOptions);
         Task<bool> AnyReviewAsync(int id);
     }
 }

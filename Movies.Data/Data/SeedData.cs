@@ -27,7 +27,7 @@ namespace Movies.Data.Data
         }
 
 
-        private static IEnumerable<Movie> GenerateMovies(int numberOfMovies, List<Actor> actors, List<Genre> genres)
+        private static List<Movie> GenerateMovies(int numberOfMovies, List<Actor> actors, List<Genre> genres)
         {
             var movies = new List<Movie>(numberOfMovies);
 
@@ -35,7 +35,7 @@ namespace Movies.Data.Data
             {
                 var assignedActors = _faker.PickRandom(actors, _faker.Random.Int(0, actors.Count))
                                           .ToList();
-                var assignedReviews = _faker.PickRandom(GenerateReviews(10), 5)
+                var assignedReviews = _faker.PickRandom(GenerateReviews(30), 15)
                                           .ToList();
 
                 var movie = new Movie

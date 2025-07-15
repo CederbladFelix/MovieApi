@@ -31,7 +31,7 @@ namespace Movies.Presentation.Controllers
         [HttpGet]
         [SwaggerOperation(Summary = "Get all movies", Description = "Gets all movies.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieDto>))]
-        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies([FromQuery] int pageSize, [FromQuery] PaginationOptionsDto paginationOptions)
+        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies([FromQuery] PaginationOptionsDto paginationOptions)
         {
             return Ok(await _serviceManager.MovieService.GetMoviesAsync(paginationOptions, includeGenre: true));
         }
