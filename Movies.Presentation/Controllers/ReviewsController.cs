@@ -13,14 +13,12 @@ namespace Movies.Presentation.Controllers
         private readonly IServiceManager _serviceManager = serviceManager;
 
         [HttpGet("api/movies/{movieId}/reviews")]
-        [SwaggerOperation(Summary = "Get reviews for a movie", Description = "Gets all reviews for a movie.")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReviewDto>))]
+        [SwaggerOperation(Summary = "Get reviews for a movie with pagination", Description = "Gets all reviews for a movie with pagination.")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResultDto<ReviewDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviewsForMovie(int movieId, [FromQuery] PaginationOptionsDto paginationOptions)
+        public async Task<ActionResult<PagedResultDto<ReviewDto>>> GetReviewsForMovie(int movieId, [FromQuery] PaginationOptionsDto paginationOptions)
         {
-            var reviewDtos = await _serviceManager.ReviewService.GetReviewsForMovieAsync(movieId, paginationOptions);
-
-            return Ok(reviewDtos);
+            return Ok(await _serviceManager.ReviewService.GetReviewsForMovieAsync(movieId, paginationOptions));
 
         }
     }

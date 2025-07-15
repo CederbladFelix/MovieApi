@@ -34,5 +34,10 @@ namespace Movies.Data.Repositories
         {
             return await FindAll().AnyAsync(r => r.Id == id);
         }
+
+        public async Task<int> ReviewCountForMovieAsync(int movieId)
+        {
+            return await FindByCondition(r => r.MovieId == movieId).CountAsync();
+        }
     }
 }

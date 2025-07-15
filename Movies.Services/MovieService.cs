@@ -28,12 +28,12 @@ namespace Movies.Services
             var moviesDto = _mapper.Map<IEnumerable<MovieDto>>(movies);
 
             return new PagedResultDto<MovieDto>
-            (
-                data: moviesDto,
-                totalItems: totalItems,
-                currentPage: paginationOptions.CurrentPage,
-                pageSize: paginationOptions.PageSize
-            );
+                (
+                    data: moviesDto,
+                    totalItems: totalItems,
+                    currentPage: paginationOptions.CurrentPage,
+                    pageSize: paginationOptions.PageSize
+                );
         }
 
         public async Task<MovieDto> GetMovieAsync(int id, bool includeGenre = false)

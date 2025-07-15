@@ -9,5 +9,6 @@ namespace Movies.Core.DomainContracts
         Task<Review?> GetReviewAsync(int id);
         Task<IEnumerable<Review>> GetReviewsForMovieAsync(int movieId, PaginationOptionsDto paginationOptions);
         Task<bool> AnyReviewAsync(int id);
+        Task<int> ReviewCountForMovieAsync(int movieId);
     }
 }
