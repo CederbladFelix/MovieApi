@@ -25,7 +25,7 @@ namespace Movies.Data.Repositories
         {
             return await FindByCondition(r => r.MovieId == movieId)
                             .OrderBy(r => r.Id)
-                            .Skip((paginationOptions.Page - 1) * paginationOptions.PageSize)
+                            .Skip((paginationOptions.CurrentPage - 1) * paginationOptions.PageSize)
                             .Take(paginationOptions.PageSize)
                             .ToListAsync();
         }

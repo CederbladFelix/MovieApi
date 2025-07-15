@@ -10,6 +10,7 @@ namespace Movies.Core.DomainContracts
         Task<IEnumerable<Movie>> GetMoviesWithQueryOptionsAsync(MovieQueryOptionsDto options);
         Task<Movie?> GetMovieWithQueryOptionsAsync(int id, MovieQueryOptionsDto options);
         Task<bool> AnyMovieAsync(int id);
+        Task<int> MovieCountAsync();
         Task<Genre> GetGenreByNameAsync(string genreName);
 
     }

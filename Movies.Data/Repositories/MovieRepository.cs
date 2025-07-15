@@ -16,13 +16,13 @@ namespace Movies.Data.Repositories
             return includeGenre ? await FindAll()
                                             .Include(m => m.Genre)
                                             .OrderBy(m => m.Id)
-                                            .Skip((paginationOptions.Page - 1) * paginationOptions.PageSize)
+                                            .Skip((paginationOptions.CurrentPage - 1) * paginationOptions.PageSize)
                                             .Take(paginationOptions.PageSize)
                                             .ToListAsync() : 
 
                                   await FindAll()
                                             .OrderBy(p => p.Id)
-                                            .Skip((paginationOptions.Page - 1) * paginationOptions.PageSize)
+                                            .Skip((paginationOptions.CurrentPage - 1) * paginationOptions.PageSize)
                                             .Take(paginationOptions.PageSize)
                                             .ToListAsync();
         }
@@ -77,6 +77,12 @@ namespace Movies.Data.Repositories
         {
             return await FindAll().AnyAsync(m => m.Id == id);
         }
+
+        public async Task<int> MovieCountAsync()
+        {
+            return await FindAll().CountAsync();
+        }
+
         public async Task<Genre> GetGenreByNameAsync(string genreName)
         {
             return await Context.Set<Genre>()

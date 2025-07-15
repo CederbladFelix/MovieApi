@@ -5,12 +5,12 @@
         private const int MaxPageSize = 100;
 
         private int pageSize = 10;
-        private int pageNumber = 1;
+        private int currentPage = 1;
 
-        public int Page
+        public int CurrentPage
         {
-            get => pageNumber;
-            set => pageNumber = (value < 1) ? 1 : value;
+            get => currentPage;
+            set => currentPage = (value < 1) ? 1 : value;
         }
 
         public int PageSize

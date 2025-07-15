@@ -19,12 +19,21 @@ namespace Movies.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<MovieDto>> GetMoviesAsync(PaginationOptionsDto paginationOptions, bool includeGenre = false)
+        public async Task<PagedResultDto<MovieDto>> GetMoviesAsync(PaginationOptionsDto paginationOptions, bool includeGenre = false)
         {
+            var totalItems = await _unitOfWork.Movies.MovieCountAsync(); 
+
             var movies = await _unitOfWork.Movies.GetMoviesAsync(paginationOptions, includeGenre);
+
             var moviesDto = _mapper.Map<IEnumerable<MovieDto>>(movies);
 
-            return moviesDto;
+            return new PagedResultDto<MovieDto>
+            (
+                data: moviesDto,
+                totalItems: totalItems,
+                currentPage: paginationOptions.CurrentPage,
+                pageSize: paginationOptions.PageSize
+            );
         }
 
         public async Task<MovieDto> GetMovieAsync(int id, bool includeGenre = false)
