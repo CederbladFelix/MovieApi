@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Movies.Core.DomainContracts;
+using Movies.Core.Exceptions;
 using Movies.Core.Models.DTOs;
 using Movies.Core.Models.Entities;
 using Movies.Services.Contracts;
@@ -23,12 +24,12 @@ namespace Movies.Services
             var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
 
             if (!actorExists || !movieExists)
-                return null!;
+                throw new NotFoundException("Actor or Movie does not exist");
 
             var actorAlreadyInMovie = await _unitOfWork.Actors.ActorInMovieAsync(dto.ActorId, movieId);
 
             if (actorAlreadyInMovie)
-                return null!;
+                throw new ActorAlreadyInMovieBadRequestException(dto.ActorId, movieId);
 
             var movieActor = _mapper.Map<MovieActor>(dto);
             movieActor.MovieId = movieId;
@@ -46,12 +47,12 @@ namespace Movies.Services
             var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
 
             if (!actorExists || !movieExists)
-                return null!;
+                throw new NotFoundException("Actor or Movie does not exist");
 
             var actorAlreadyInMovie = await _unitOfWork.Actors.ActorInMovieAsync(actorId, movieId);
 
             if (actorAlreadyInMovie)
-                return null!;
+                throw new ActorAlreadyInMovieBadRequestException(actorId, movieId);
 
             var movieActor = _mapper.Map<MovieActor>(dto);
             movieActor.MovieId = movieId;
