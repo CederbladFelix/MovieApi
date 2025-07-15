@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Movies.Core.DomainContracts;
+using Movies.Core.Exceptions;
 using Movies.Core.Models.DTOs;
 using Movies.Services.Contracts;
 
@@ -21,7 +22,7 @@ namespace Movies.Services
             var movieExists = await _unitOfWork.Movies.AnyMovieAsync(movieId);
 
             if (!movieExists)
-                return null!;
+                throw new MovieNotFoundException(movieId);
 
             var reviews = await _unitOfWork.Reviews.GetReviewsForMovieAsync(movieId, paginationOptions);
 

@@ -15,12 +15,10 @@ namespace Movies.Presentation.Controllers
         [HttpGet("api/movies/{movieId}/reviews")]
         [SwaggerOperation(Summary = "Get reviews for a movie", Description = "Gets all reviews for a movie.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReviewDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviewsForMovie(int movieId, [FromQuery] PaginationOptionsDto paginationOptions)
         {
             var reviewDtos = await _serviceManager.ReviewService.GetReviewsForMovieAsync(movieId, paginationOptions);
-
-            if (reviewDtos == null)
-                return NotFound(); 
 
             return Ok(reviewDtos);
 
