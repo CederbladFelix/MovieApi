@@ -16,10 +16,10 @@ namespace Movies.Data.Data
             CreateMap<Movie, MovieCreateDto>()
                 .ReverseMap()
                 .ForMember(dest => dest.Genre, opt => opt.Ignore());
+
             CreateMap<Movie, MovieUpdateDto>()
                 .ReverseMap()
                 .ForMember(dest => dest.Genre, opt => opt.Ignore());
-
 
             CreateMap<Movie, MoviePatchDto>()
                 .ReverseMap()
@@ -29,7 +29,6 @@ namespace Movies.Data.Data
             CreateMap<Actor, ActorDto>();
 
             CreateMap<MovieActor, MovieActorDto>();
-
 
             CreateMap<MovieActor, MovieActorCreateDto>().ReverseMap();
             CreateMap<MovieActor, MovieActorCreateWithActorIdDto>().ReverseMap();
