@@ -13,19 +13,17 @@ namespace Movies.Data.Data
             CreateMap<Movie, MovieDetailDto>()
                 .ForMember(dest => dest.Actors, opt => opt.MapFrom(src => src.MovieActors.Select(ma => ma.Actor)));
 
-            CreateMap<Movie, MovieCreateDto>();
-            CreateMap<MovieCreateDto, Movie>()
-                .ForMember(dest => dest.Genre, opt => opt.Ignore())
-                .ForMember(dest => dest.MovieDetails, opt => opt.MapFrom(src => new MovieDetails
-                {
-                    Synopsis = src.MovieDetailsSynopsis,
-                    Language = src.MovieDetailsLanguage,
-                    Budget = src.MovieDetailsBudget
-                }));
+            CreateMap<Movie, MovieCreateDto>()
+                .ReverseMap()
+                .ForMember(dest => dest.Genre, opt => opt.Ignore());
+            CreateMap<Movie, MovieUpdateDto>()
+                .ReverseMap()
+                .ForMember(dest => dest.Genre, opt => opt.Ignore());
 
-            CreateMap<Movie, MovieUpdateDto>();
-            CreateMap<MovieUpdateDto, Movie>()
-                 .ForMember(dest => dest.Genre, opt => opt.Ignore());
+
+            CreateMap<Movie, MoviePatchDto>()
+                .ReverseMap()
+                .ForMember(dest => dest.Genre, opt => opt.Ignore());
 
             CreateMap<Review, ReviewDto>();
             CreateMap<Actor, ActorDto>();

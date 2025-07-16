@@ -35,7 +35,7 @@ namespace Movies.Data.Data
             {
                 var assignedActors = _faker.PickRandom(actors, _faker.Random.Int(0, actors.Count))
                                           .ToList();
-                var assignedReviews = _faker.PickRandom(GenerateReviews(30), 15)
+                var assignedReviews = _faker.PickRandom(GenerateReviews(30), 10)
                                           .ToList();
 
                 var movie = new Movie

@@ -18,8 +18,9 @@ namespace Movies.Api
             builder.Services.AddDbContext<MovieApiContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MovieApiContext") ?? 
                     throw new InvalidOperationException("Connection string 'MovieApiContext' not found.")));
-            
+
             builder.Services.AddControllers()
+                            .AddNewtonsoftJson()
                             .AddApplicationPart(typeof(AssemblyReference).Assembly);
 
             builder.Services.AddRepositories();

@@ -1,5 +1,4 @@
 ﻿using Movies.Core.Models.DTOs;
-using System.Threading.Tasks;
 
 namespace Movies.Services.Contracts
 {
@@ -11,5 +10,7 @@ namespace Movies.Services.Contracts
         Task PutMovieAsync(int id, MovieUpdateDto dto);
         Task<MovieDto> PostMovieAsync(MovieCreateDto dto);
         Task DeleteMovieAsync(int id);
+        Task<MoviePatchDto> GetMoviePatchDtoAsync(int id);
+        Task SavePatchedMovie(int id, MoviePatchDto movieToPatchDto);
     }
 }

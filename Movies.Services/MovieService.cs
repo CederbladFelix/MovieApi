@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Movies.Core.DomainContracts;
 using Movies.Core.Exceptions;
@@ -61,7 +62,7 @@ namespace Movies.Services
 
         public async Task PutMovieAsync(int id, MovieUpdateDto dto)
         {
-            var movie = await _unitOfWork.Movies.GetMovieAsync(id, includeGenre: true);
+            var movie = await _unitOfWork.Movies.GetMovieWithQueryOptionsAsync(id, new MovieQueryOptionsDto { IncludeDetails = true, IncludeGenre = true });
 
             if (movie == null)
                 throw new MovieNotFoundException(id);
@@ -82,6 +83,36 @@ namespace Movies.Services
                 else
                     throw;
             }
+        }
+
+        public async Task<MoviePatchDto> GetMoviePatchDtoAsync(int id)
+        {
+            var movie = await _unitOfWork.Movies.GetMovieWithQueryOptionsAsync(id, new MovieQueryOptionsDto { IncludeDetails = true, IncludeGenre = true });
+
+            if (movie == null)
+                throw new MovieNotFoundException(id);
+
+            var movieToPatchDto = _mapper.Map<MoviePatchDto>(movie);
+
+            return movieToPatchDto;
+
+        }
+
+        public async Task SavePatchedMovie(int id, MoviePatchDto movieToPatchDto)
+        {
+            var movie = await _unitOfWork.Movies.GetMovieWithQueryOptionsAsync(id, new MovieQueryOptionsDto { IncludeDetails = true, IncludeGenre = true });
+
+            if (movie == null)
+                throw new MovieNotFoundException(id);
+
+            _mapper.Map(movieToPatchDto, movie);
+            if (!string.IsNullOrWhiteSpace(movieToPatchDto.Genre))
+            {
+                var genre = await _unitOfWork.Movies.GetGenreByNameAsync(movieToPatchDto.Genre);
+                movie.Genre = genre;
+            }
+
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task<MovieDto> PostMovieAsync(MovieCreateDto dto)
@@ -109,5 +140,6 @@ namespace Movies.Services
             _unitOfWork.Movies.Delete(movie);
             await _unitOfWork.CompleteAsync();
         }
+
     }
 }

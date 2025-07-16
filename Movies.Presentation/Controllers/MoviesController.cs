@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Core.Models.DTOs;
 using Movies.Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
+
 
 namespace Movies.Presentation.Controllers
 {
@@ -61,6 +63,25 @@ namespace Movies.Presentation.Controllers
         {
             await _serviceManager.MovieService.PutMovieAsync(id, dto);
             return NoContent();       
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchMovie(int id, JsonPatchDocument<MoviePatchDto> patchDocument)
+        {
+            if (patchDocument == null)
+                return BadRequest();
+
+            var movieToPatchDto = await _serviceManager.MovieService.GetMoviePatchDtoAsync(id);
+
+            patchDocument.ApplyTo(movieToPatchDto, ModelState);
+            TryValidateModel(movieToPatchDto);
+
+            if (!ModelState.IsValid) 
+                return UnprocessableEntity(ModelState);
+
+            await _serviceManager.MovieService.SavePatchedMovie(id, movieToPatchDto);
+
+            return NoContent();
         }
 
         [HttpPost]
