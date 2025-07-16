@@ -66,6 +66,10 @@ namespace Movies.Presentation.Controllers
         }
 
         [HttpPatch("{id}")]
+        [SwaggerOperation(Summary = "Patch movie and/or moviedetails", Description = "Patches an existing movie by ID.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> PatchMovie(int id, JsonPatchDocument<MoviePatchDto> patchDocument)
         {
             if (patchDocument == null)
