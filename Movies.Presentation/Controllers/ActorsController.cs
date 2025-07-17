@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Core.Models.DTOs;
+using Movies.Core.Models.DTOs.Validated;
 using Movies.Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 

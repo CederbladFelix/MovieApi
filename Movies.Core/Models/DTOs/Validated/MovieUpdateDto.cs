@@ -1,9 +1,9 @@
 ﻿using Movies.Core.Validations;
 using System.ComponentModel.DataAnnotations;
 
-namespace Movies.Core.Models.DTOs
+namespace Movies.Core.Models.DTOs.Validated
 {
-    public class MovieCreateDto
+    public class MovieUpdateDto
     {
         [Required]
         [StringLength(100, MinimumLength = 3)]
@@ -30,5 +30,4 @@ namespace Movies.Core.Models.DTOs
         [Range(0, 1_000_000_000)]
         public int MovieDetailsBudget { get; set; }
     }
-
 }

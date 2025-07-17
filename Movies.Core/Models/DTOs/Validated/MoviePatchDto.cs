@@ -1,7 +1,7 @@
 ﻿using Movies.Core.Validations;
 using System.ComponentModel.DataAnnotations;
 
-namespace Movies.Core.Models.DTOs
+namespace Movies.Core.Models.DTOs.Validated
 {
     public class MoviePatchDto
     {

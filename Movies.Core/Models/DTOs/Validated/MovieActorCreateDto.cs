@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Movies.Core.Models.DTOs
+namespace Movies.Core.Models.DTOs.Validated
 {
     public class MovieActorCreateDto
     {

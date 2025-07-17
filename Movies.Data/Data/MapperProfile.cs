@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Movies.Core.Models.DTOs;
+using Movies.Core.Models.DTOs.Validated;
 using Movies.Core.Models.Entities;
 
 namespace Movies.Data.Data

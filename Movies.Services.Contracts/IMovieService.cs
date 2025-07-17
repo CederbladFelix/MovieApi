@@ -1,4 +1,5 @@
 ﻿using Movies.Core.Models.DTOs;
+using Movies.Core.Models.DTOs.Validated;
 
 namespace Movies.Services.Contracts
 {
