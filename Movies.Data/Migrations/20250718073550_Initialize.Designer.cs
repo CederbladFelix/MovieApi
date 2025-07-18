@@ -11,8 +11,8 @@ using Movies.Data.Data;
 namespace Movies.Data.Migrations
 {
     [DbContext(typeof(MovieApiContext))]
-    [Migration("20250714150328_Init")]
-    partial class Init
+    [Migration("20250718073550_Initialize")]
+    partial class Initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
