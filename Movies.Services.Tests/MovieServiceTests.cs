@@ -35,9 +35,49 @@ namespace Movies.Services.Tests
             var resultDto = await sut.GetMoviesAsync(new PaginationOptionsDto { CurrentPage = 1, PageSize = 10 }, true);
 
             //Assert
+            Assert.NotNull(resultDto);
             Assert.IsType<PagedResultDto<MovieDto>>(resultDto);
             Assert.Equal(expectedMovies, resultDto.Data.Count());
         }
+
+        [Fact]
+        public async Task GetMovieAsync_Returns_Expected_MovieDto()
+        {
+            //Arrange
+            var movie = GenerateMovies(1)[0];
+            _uowMock.Setup(x => x.Movies.GetMovieAsync(It.IsAny<int>(), true)).ReturnsAsync(movie);
+
+            //Act
+            var resultDto = await sut.GetMovieAsync(movie.Id, true);
+
+            //Assert
+            Assert.NotNull(resultDto);
+            Assert.IsType<MovieDto>(resultDto);
+            Assert.Equal(movie.Id, resultDto.Id);
+        }
+
+        [Fact]
+        public async Task GetMovieDetailsAsync_Returns_Expected_MovieDetailDto()
+        {
+            //Arrange
+            var movie = GenerateMovies(1)[0];
+            _uowMock.Setup(x => x.Movies.GetMovieWithQueryOptionsAsync(1, It.IsAny<MovieQueryOptionsDto>())).ReturnsAsync(movie);
+
+            //Act
+            var resultDto = await sut.GetMovieDetailsAsync(movie.Id, new MovieQueryOptionsDto { IncludeDetails = true, IncludeGenre = true });
+
+            //Assert
+            Assert.NotNull(resultDto);
+            Assert.IsType<MovieDetailDto>(resultDto);
+            Assert.Equal(movie.Id, resultDto.Id);
+            Assert.Equal(movie.MovieDetails.Synopsis, resultDto.MovieDetailsSynopsis);
+        }
+
+
+
+
+
+
         
         public List<Movie> GenerateMovies(int numberOfMovies)
         {
@@ -59,6 +99,7 @@ namespace Movies.Services.Tests
             {
                 var movie = new Movie
                 {
+                    Id = i,
                     Title = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(faker.Commerce.ProductName()),
                     Year = faker.Date.Past(20).Year,
                     Duration = faker.Random.Int(60, 180),
